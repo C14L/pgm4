@@ -1,0 +1,18 @@
+{% extends "pgm4app/base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h2>Questions</h2>
+
+  {% if object_list %}
+    {% for item in object_list %}
+      <ul>
+        <li>{{ item.name }}</li>
+      </ul>
+    {% endfor %}
+  {% else %}
+    <p>No questions found :(</p>
+  {% endif %}
+
+  <p><a href="{% url 'ask-form' %}">{% trans 'Ask a question...' %}</a></p>
+{% endblock %}
