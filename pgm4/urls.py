@@ -28,16 +28,20 @@ urlpatterns = [
         pgm4app.views.UserListView.as_view(), name='user-list'),
     url(r'^users/(?P<username>\w+)/$',
         pgm4app.views.UserDetailView.as_view(), name='user-detail'),
+
+    url(r'^ask/$',
+        pgm4app.views.QuestionCreateView.as_view(), name='question-create'),
+    url(r'^ask/(?P<pk>\d+)/$',
+        pgm4app.views.QuestionUpdateView.as_view(), name='question-update'),
     url(r'^questions/$',
         pgm4app.views.QuestionListView.as_view(), name='question-list'),
-    url(r'^questions/(?P<pk>)/(?P<slug>)/$',
+    url(r'^questions/(?P<pk>\d+)/(?P<slug>[a-z0-9_-]+)/$',
         pgm4app.views.QuestionDetailView.as_view(), name='question-detail'),
+
     url(r'^tags/$',
         pgm4app.views.TagListView.as_view(), name='tag-list'),
-    url(r'^tags/(?P<slug>[a-zA-Z0-9_-])$',
+    url(r'^tags/(?P<slug>[a-z0-9_-]+)$',
         pgm4app.views.TagDetailView.as_view(), name='tag-detail'),
-    url(r'^ask/$',
-        pgm4app.views.AskView.as_view(), name='ask-form'),
 ]
 
 if settings.DEBUG:

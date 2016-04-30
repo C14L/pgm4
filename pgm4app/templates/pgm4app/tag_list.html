@@ -1,0 +1,19 @@
+{% extends "pgm4app/base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>Questions</h1>
+
+  {% if object_list %}
+    {% for item in object_list %}
+      <ul>
+        <li><a href="{% url 'tag-detail' item.pk item.slug %}">{{ item.name }}</a></li>
+      </ul>
+    {% endfor %}
+  {% else %}
+    <p>{% trans 'No tags found.' %}</p>
+  {% endif %}
+
+  <p><a href="{% url 'question-create' %}">{% trans 'Ask a question...' %}</a></p>
+
+{% endblock %}

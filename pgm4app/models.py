@@ -13,14 +13,14 @@ class Tag(models.Model):
         verbose_name='tag',
         help_text=_('A tag has only letters or numbers.'),
         error_messages={'blank': _('Please write a question.')})
-    slug = models.SlugField(max_length=30, null=False, blank=False)
+    slug = models.SlugField(
+        max_length=30, null=False, blank=True, editable=False)
 
     def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        if self.content_type == 'q':
-            self.slug = slugify(self.title)
+        self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
 
@@ -29,7 +29,7 @@ def validate_is_question(value):
         raise ValidationError(_('That is not a question.'))
 
 
-content_type_choices = (('q', 'question'), ('answer', 'a'), ('c', 'comment'))
+content_type_choices = (('q', 'question'), ('a', 'answer'), ('c', 'comment'))
 
 
 class ContentQuerySet(models.QuerySet):
@@ -94,10 +94,10 @@ class Content(models.Model):
         null=False, blank=True, default='')
     title = models.CharField(
         max_length=200, blank=False, null=False, editable=True,
+        # validators=[validate_is_question],
         verbose_name='question',
         help_text=_('Please write a question.'),
-        error_messages={'blank': _('Please write a question.')},
-        validators=[validate_is_question])
+        error_messages={'blank': _('Please write a question.')})
     text = models.TextField(
         max_length=100000, blank=True, null=False, editable=True, default='',
         verbose_name=_('description'),
@@ -126,13 +126,18 @@ class Content(models.Model):
 
     objects = ContentQuerySet.as_manager()
 
+    class Meta:
+        ordering = ['-id', '-created']
+
     def __str__(self):
         if self.content_type == 'q':
-            return 'Question {}: ""'.format(self.pk, self.title)
+            return 'Question {}: "{}"'.format(self.pk, self.title)
         elif self.content_type == 'a':
             return 'Answer {}'.format(self.pk)
         elif self.content_type == 'c':
             return 'Comment {}'.format(self.pk)
+        else:
+            return 'Undefined content type {}: "{}"'.format(self.pk, self.title)
 
     def save(self, *args, **kwargs):
         if self.content_type == 'q':
@@ -145,6 +150,10 @@ class Content(models.Model):
                 raise IntegrityError("Question can't have more "
                                      "than one accepted answer")
         super().save(*args, **kwargs)
+
+    @classmethod
+    def get_content_type_id(cls, name):
+        return [a[0] for a in content_type_choices if a[1] == name][0]
 
     def answers(self, public_only=True):
         if self.content_type == 'q':

@@ -1,0 +1,13 @@
+{% extends "pgm4app/base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% trans 'Ask a questions' %}</h1>
+
+  <form action="" method="POST">{% csrf_token %}{{ form.as_p }}
+    <p>
+      <input type="submit" value="{% trans 'Publish the question' %}">&nbsp; &nbsp;
+      <a href="{% url 'question-list' %}">{% trans 'Recent questions' %}</a>
+    </p>
+  </form>
+{% endblock %}

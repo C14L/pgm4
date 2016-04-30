@@ -1,6 +1,24 @@
 {% extends "pgm4app/base.html" %}
+{% load i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
-    <h1>{{ object.title }}!</h1>
-    <p>{{ object.text }}!</p>
+  <h1>{{ object.title|bleach }}!</h1>
+  <p>{{ object.text|markdown|bleach }}</p>
+  <p>
+    <a class="username" href="{% url 'user-detail' object.user.username %}">{{ object.user.username }}</a>
+    <span class="timestamp" data-timestamp="{{ object.created }}">{{ object.created }}</span>
+    <span class="tags">
+      {% for tag in object.tags.all %}
+      <a class="tag" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
+      {% endfor %}
+    </span>
+  </p>
+
+  <p>
+    {% if user.is_authenticated and object.user == user %}
+    <a href="{% url 'question-update' object.pk %}">{% trans 'Edit this question' %}</a>
+    {% endif %}
+    <a href="{% url 'question-list' %}">{% trans 'Recent questions' %}</a>
+  </p>
+
 {% endblock %}
