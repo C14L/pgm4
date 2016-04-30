@@ -2,23 +2,39 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
-  <h1>{{ object.title|bleach }}!</h1>
-  <p>{{ object.text|markdown|bleach }}</p>
-  <p>
-    <a class="username" href="{% url 'user-detail' object.user.username %}">{{ object.user.username }}</a>
-    <span class="timestamp" data-timestamp="{{ object.created }}">{{ object.created }}</span>
-    <span class="tags">
-      {% for tag in object.tags.all %}
-      <a class="tag" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
-      {% endfor %}
-    </span>
-  </p>
+  <h1>{{ object.title|bleach }}</h1>
+  <section class="question">
+    <p>{{ object.text|markdown|bleach }}</p>
+    <p>
+      <a class="username" href="{% url 'user-detail' object.user.username %}">{{ object.user.username }}</a>
+      {% if user.is_authenticated and object.user == user %}
+      (<a href="{% url 'question-update' object.pk %}">{% trans 'edit' %}</a>)
+      {% endif %}
+      <span class="timestamp" data-timestamp="{{ object.created }}">{{ object.created }}</span>
+      <span class="tags">
+        {% for tag in object.tags.all %}
+        <a class="tag" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
+        {% endfor %}
+      </span>
+    </p>
+    <p>
+      <a href="{% url 'answer-create' object.pk %}">{% trans 'Answer this question' %}</a> |
+      <a href="{% url 'question-list' %}">{% trans 'Recent questions' %}</a>
+    </p>
+  </section>
 
-  <p>
-    {% if user.is_authenticated and object.user == user %}
-    <a href="{% url 'question-update' object.pk %}">{% trans 'Edit this question' %}</a>
-    {% endif %}
-    <a href="{% url 'question-list' %}">{% trans 'Recent questions' %}</a>
-  </p>
+  <section class="answers">
+    <h2>{% trans 'Answers' %} ({{ object.children.public.answers | length }})</h2>
+    {% for answer in object.children.public.answers %}
+      <p>{{ answer.text|markdown|bleach }}</p>
+      <p>
+        <a class="username" href="{% url 'user-detail' object.user.username %}">{{ answer.user.username }}</a>
+        {% if user.is_authenticated and answer.user == user %}
+        (<a href="{% url 'answer-update' object.pk answer.pk %}">{% trans 'edit' %}</a>)
+        {% endif %}
+        <span class="timestamp" data-timestamp="{{ answer.created }}">{{ answer.created }}</span>
+      </p>
+    {% endfor %}
+  </section>
 
 {% endblock %}

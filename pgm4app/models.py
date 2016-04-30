@@ -44,7 +44,7 @@ class ContentQuerySet(models.QuerySet):
         return self.filter(content_type='c')
 
     def public(self):
-        return self.filter(Q(is_hidden=False) | Q(is_deleted=False))
+        return self.filter(is_hidden=False, is_deleted=False)
 
     def hidden(self):
         return self.filter(is_hidden=True)
@@ -94,17 +94,14 @@ class Content(models.Model):
         null=False, blank=True, default='')
     title = models.CharField(
         max_length=200, blank=False, null=False, editable=True,
-        # validators=[validate_is_question],
         verbose_name='question',
         help_text=_('Please write a question.'),
         error_messages={'blank': _('Please write a question.')})
     text = models.TextField(
         max_length=100000, blank=True, null=False, editable=True, default='',
-        verbose_name=_('description'),
-        help_text=_('Explain what sort of answers you are looking for.'))
+        verbose_name='')
     ip = models.GenericIPAddressField(blank=True, null=True, default=None,
                                       editable=False)
-
     parent = models.ForeignKey(
         'self', models.SET_NULL, related_name='children',
         null=True, default=None, editable=False)

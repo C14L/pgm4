@@ -33,6 +33,12 @@ urlpatterns = [
         pgm4app.views.QuestionCreateView.as_view(), name='question-create'),
     url(r'^ask/(?P<pk>\d+)/$',
         pgm4app.views.QuestionUpdateView.as_view(), name='question-update'),
+
+    url(r'^answer/(?P<question>\d+)/$',
+        pgm4app.views.AnswerCreateView.as_view(), name='answer-create'),
+    url(r'^answer/(?P<question>\d+)/(?P<pk>\d+)/$',
+        pgm4app.views.AnswerUpdateView.as_view(), name='answer-update'),
+
     url(r'^questions/$',
         pgm4app.views.QuestionListView.as_view(), name='question-list'),
     url(r'^questions/(?P<pk>\d+)/(?P<slug>[a-z0-9_-]+)/$',
