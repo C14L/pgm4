@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView, CreateView, UpdateView
 from django.views.generic.detail import DetailView
@@ -127,4 +128,69 @@ class AnswerUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['question'] = self.object.parent
+        return context
+
+
+class CommentCreateView(CreateView):
+    fields = ['text']
+    model = Content
+    template_name = 'pgm4app/comment_create.html'
+    _parent = None
+    _question = None
+
+    def get_parent(self):
+        if not self._parent:
+            self._parent = get_object_or_404(Content, pk=self.kwargs['parent'])
+        return self._parent
+
+    def get_question(self):
+        if not self._question:
+            self._question = self.get_parent().get_question()
+        return self._question
+
+    def form_valid(self, form):
+        form.instance.content_type = Content.get_content_type_id('comment')
+        form.instance.parent = self.get_parent()
+        form.instance.user = self.request.user
+        form.save()
+        messages.success(self.request, _('Your comment was published.'))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        kw = {'pk': self.get_question().pk, 'slug': self.get_question().slug}
+        return reverse('question-detail', kwargs=kw)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parent'] = self.get_parent()
+        context['question'] = self.get_question()
+        return context
+
+
+class CommentUpdateView(UpdateView):
+    fields = ['text']
+    model = Content
+    template_name = 'pgm4app/comment_create.html'
+    _question = None
+
+    def get_question(self):
+        if not self._question:
+            self._question = self.object.get_question()
+        return self._question
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+    def form_valid(self, form):
+        messages.success(self.request, _('Your comment was updated.'))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        kw = {'pk': self.get_question().pk, 'slug': self.get_question().slug}
+        return reverse('question-detail', kwargs=kw)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parent'] = self.object.parent
+        context['question'] = self.get_question()
         return context

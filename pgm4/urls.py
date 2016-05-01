@@ -39,6 +39,11 @@ urlpatterns = [
     url(r'^answer/(?P<question>\d+)/(?P<pk>\d+)/$',
         pgm4app.views.AnswerUpdateView.as_view(), name='answer-update'),
 
+    url(r'^comment/(?P<parent>\d+)/$',
+        pgm4app.views.CommentCreateView.as_view(), name='comment-create'),
+    url(r'^comment/(?P<parent>\d+)/(?P<pk>\d+)/$',
+        pgm4app.views.CommentUpdateView.as_view(), name='comment-update'),
+
     url(r'^questions/$',
         pgm4app.views.QuestionListView.as_view(), name='question-list'),
     url(r'^questions/(?P<pk>\d+)/(?P<slug>[a-z0-9_-]+)/$',

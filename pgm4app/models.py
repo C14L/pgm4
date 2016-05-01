@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.db import models, IntegrityError
 from django.db.models import Count, When, Case, Q
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+
+
+def validate_is_question():
+    pass
 
 
 class Tag(models.Model):
@@ -22,11 +25,6 @@ class Tag(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
-
-def validate_is_question(value):
-    if not value.endswith('?'):
-        raise ValidationError(_('That is not a question.'))
 
 
 content_type_choices = (('q', 'question'), ('a', 'answer'), ('c', 'comment'))
@@ -175,3 +173,77 @@ class Content(models.Model):
             qs = qs.public()
 
         return qs.filter(parent=self.pk)
+
+    def get_question(self):
+        """Return the question a Content object is a decendent of."""
+        if self.is_question:
+            return self
+        elif self.is_answer:
+            return self.parent
+        elif self.is_comment:
+            if self.parent.is_question:
+                return self.parent
+            elif self.parent.is_answer:
+                return self.parent.parent
+        raise IntegrityError('Content object {} is orphaned.'.format(self.pk))
+
+    @property
+    def is_question(self):
+        return self.content_type == 'q'
+
+    @property
+    def is_answer(self):
+        return self.content_type == 'a'
+
+    @property
+    def is_comment(self):
+        return self.content_type == 'c'
+
+
+class VoteQuerySet(models.QuerySet):
+    def count_upvotes(self):
+        """Returns the number of actual upvotes."""
+        return self.filter(value=1).count()
+
+    def count_downvotes(self):
+        """Returns the number of actual downvotes."""
+        return self.filter(value=-1).count()
+
+    def count_votes(self):
+        """Returns the sum of upvotes and downvotes."""
+        return self.annotate(sum=Sum('value'))
+
+
+class Vote(models.Model):
+    user = models.ForeignKey(
+        User, models.CASCADE, related_name='votes', null=False, editable=False)
+    content = models.ForeignKey(
+        Content, models.CASCADE, related_name='votes', null=False, editable=False)
+    value = models.SmallIntegerField(null=False, editable=False)
+
+    objects = VoteQuerySet.as_manager()
+
+    @classmethod
+    def _create_vote(cls, user, content, value):
+        try:
+            v = Vote.objects.get(user=user, content=content)
+            v.value = value
+            v.save(update_fields=['value'])
+        except Vote.DoesNotExist:
+            v = Vote.objects.create(user=user, content=content, value=value)
+        return v
+
+    @classmethod
+    def create_upvote(cls, user, content):
+        return cls._create_vote(user=user, content=content, value=1)
+
+    @classmethod
+    def create_downvote(cls, user, content):
+        return cls._create_vote(user=user, content=content, value=-1)
+
+    @classmethod
+    def delete_vote(cls, user, content):
+        try:
+            Vote.objects.get(user=user, content=content).delete()
+        except Vote.DoesNotExist:
+            pass

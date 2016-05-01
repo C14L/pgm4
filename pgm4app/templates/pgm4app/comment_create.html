@@ -1,0 +1,11 @@
+{% extends "pgm4app/base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <form action="" method="POST">{% csrf_token %}{{ form.as_p }}
+    <p>
+      <input type="submit" value="{% trans 'add comment' %}">&nbsp; &nbsp;
+      <a href="{% url 'question-detail' question.pk question.slug %}">{% trans 'cancel' %}</a>
+    </p>
+  </form>
+{% endblock %}
