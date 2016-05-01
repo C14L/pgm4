@@ -120,6 +120,12 @@ class Content(models.Model):
     points = models.PositiveIntegerField(null=False, editable=True, default=0)
     timepoints = models.BigIntegerField(null=False, editable=False, default=0)
 
+    count_views = models.PositiveIntegerField(null=False, default=0)
+    count_answers = models.PositiveIntegerField(null=False, default=0)
+    count_comments = models.PositiveIntegerField(null=False, default=0)
+    count_flags = models.PositiveIntegerField(null=False, default=0)
+    count_favorite = models.PositiveIntegerField(null=False, default=0)
+
     objects = ContentQuerySet.as_manager()
 
     class Meta:
