@@ -53,6 +53,11 @@ urlpatterns = [
         pgm4app.views.TagListView.as_view(), name='tag-list'),
     url(r'^tags/(?P<slug>[a-z0-9_-]+)$',
         pgm4app.views.TagDetailView.as_view(), name='tag-detail'),
+
+    url(r'^vote/(?P<pk>\d+)/up/$',
+        pgm4app.views.VoteView.as_view(), {'vote': 1}, name='vote-up'),
+    url(r'^vote/(?P<pk>\d+)/down/$',
+        pgm4app.views.VoteView.as_view(), {'vote': -1}, name='vote-down'),
 ]
 
 if settings.DEBUG:

@@ -2,7 +2,14 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
-  <h1 class="question-title">{{ object.title|bleach }}</h1>
+  <section class="question header">
+    <div class="updown">
+      <form method="POST" action="{% url 'vote-up' object.pk %}">{% csrf_token %}<input type="submit" class="up" value="▲"></form>
+      <div class="points" title="{{ object.up }} | {{ object.down }}">{{ object.points }}</div>
+      <form method="POST" action="{% url 'vote-down' object.pk %}">{% csrf_token %}<input type="submit" class="down" value="▼"></form>
+    </div>
+    <h1 class="question-title">{{ object.title|bleach }}</h1>
+  </section>
 
   <section class="question detail">
     <p class="text">{{ object.text|markdown|bleach }}</p>

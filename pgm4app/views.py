@@ -1,10 +1,15 @@
+from symbol import classdef
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views.generic import TemplateView, CreateView, UpdateView
+from django.views.generic import TemplateView, CreateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -194,3 +199,11 @@ class CommentUpdateView(UpdateView):
         context['parent'] = self.object.parent
         context['question'] = self.get_question()
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class VoteView(View):
+    def post(self, *args, **kwargs):
+        content = get_object_or_404(Content, pk=kwargs['pk'])
+        content.toggle_vote(self.request.user, kwargs['vote'])
+        return HttpResponseRedirect(content.get_absolute_url())
