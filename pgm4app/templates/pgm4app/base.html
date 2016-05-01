@@ -1,9 +1,21 @@
+{% load i18n markdown_deux_tags bleach_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <style>
+      html { box-sizing: border-box; } *, *:before, *:after { box-sizing: inherit; }
+      body { margin: 0; padding: 0; }
+      a { text-decoration: none; }
+
+      header { background-color: darkgray; color: white; margin: 0; padding: 8px 16px; }
+      header a { color: inherit; }
+      header a.site-name { font: normal 24px/24px sans-serif; }
+      header a.ask { font: normal 16px/24px sans-serif; }
+
+      main { margin: 0; padding: 16px; }
+
       .messages { list-style: none; margin: 0; padding: 0; position: fixed; top: auto; right: 0; bottom: 16px; left: 0; }
       .messages .message { max-width: 600px; margin: 0 auto; padding: 8px; background-color: rgba(0, 0, 0, 0.82); color: white; }
       .messages .message.hide { transition: 0.3s ease-out; opacity: 0; }
@@ -11,19 +23,27 @@
       section.detail { padding: 4px; margin: 0; background-color: rgba(0, 0, 255, 0.1); }
       section.list .item { padding: 4px; margin: 4px; background-color: rgba(0, 255, 0, 0.2); }
 
-      .updown { float: left; background-color: black; margin-right: 8px; }
-      .updown .points { text-align: center; padding: 2px 0; color: white; }
+      .updown { float: left; background-color: white; margin-right: 8px; }
+      .updown .points { text-align: center; padding: 2px 0; color: gray; }
       .updown form {  }
-      .updown form input { font-size: 20px; }
+      .updown form input { font-size: 20px; border: none; outline: none; background: none; cursor: pointer; }
       .updown form.up {  }
       .updown form.down {  }
 
-      .question.header { overflow: hidden; background-color: rgba(255, 0, 0, 0.2); margin: 0; padding: 0; }
-      .question.header h1 { font-size: 32px; line-height: 1em; background-color: yellow; }
-
+      .question.header { overflow: hidden; background-color: rgba(255, 0, 0, 0.05); margin: 8px 0; padding: 0; }
+      .question.header h1 { font-size: 28px; margin: 4px 0; padding: 0; }
+      .question.header p { margin: 0; padding: 0; }
     </style>
   </head>
   <body>
+    <header>
+      <a class="site-name" href="{% url 'home' %}">pre.gunta.me</a>
+      <a class="ask" href="{% url 'question-create' %}">{% trans 'ask a question' %}</a>
+      <a class="question-list" href="{% url 'question-list' %}">{% trans 'recent questions' %}</a>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
@@ -31,7 +51,5 @@
         {% endfor %}
       </ul>
     {% endif %}
-
-    {% block content %}{% endblock %}
   </body>
 </html>

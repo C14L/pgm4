@@ -2,33 +2,16 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
-  <section class="question header">
-    <div class="updown">
-      <form method="POST" action="{% url 'vote-up' object.pk %}">{% csrf_token %}<input type="submit" class="up" value="▲"></form>
-      <div class="points" title="{{ object.up }} | {{ object.down }}">{{ object.points }}</div>
-      <form method="POST" action="{% url 'vote-down' object.pk %}">{% csrf_token %}<input type="submit" class="down" value="▼"></form>
-    </div>
-    <h1 class="question-title">{{ object.title|bleach }}</h1>
+  {% include 'pgm4app/question_header_partial.html' with detail=1 %}
+
+  <section class="question content">
+    <p class="text">{{ object.text|markdown|bleach }}</p>
   </section>
 
   <section class="question detail">
-    <p class="text">{{ object.text|markdown|bleach }}</p>
-    <p class="meta">
-      <a class="username" href="{% url 'user-detail' object.user.username %}">{{ object.user.username }}</a>
-      {% if user.is_authenticated and object.user == user %}
-      (<a class="edit" href="{% url 'question-update' object.pk %}">{% trans 'edit' %}</a>)
-      {% endif %}
-      <span class="timestamp" data-timestamp="{{ object.created }}">{{ object.created }}</span>
-      <span class="tags list">
-        {% for tag in object.tags.all %}
-        <a class="tag item" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
-        {% endfor %}
-      </span>
-    </p>
     <p class="links">
       <a class="link-answer-create" href="{% url 'answer-create' object.pk %}">{% trans 'answer this question' %}</a> |
       <a class="link-comment-create" href="{% url 'comment-create' object.pk %}">{% trans 'add a comment' %}</a> |
-      <a class="link-question-list" href="{% url 'question-list' %}">{% trans 'recent questions' %}</a>
     </p>
 
     <section class="comments list">
