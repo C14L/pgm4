@@ -108,7 +108,7 @@ class Content(models.Model):
         User, models.SET_NULL, related_name='own_content',
         null=True, default=None, editable=False)
     tags = models.ManyToManyField(
-        Tag, related_name='content', editable=True)
+        Tag, related_name='content', blank=True, editable=True)
 
     is_hidden = models.BooleanField(default=False, editable=False)  # by user
     is_deleted = models.BooleanField(default=False, editable=True)  # by admin
@@ -273,8 +273,8 @@ class Content(models.Model):
                 v.value = value
                 v.save(update_fields=['value'])
 
-        self.up = self.votes.by(user).count_upvotes()
-        self.down = self.votes.by(user).count_downvotes()
+        self.up = self.votes.count_upvotes()
+        self.down = self.votes.count_downvotes()
         self.set_points()
         self.set_timepoints()
         self.save(update_fields=['up', 'down', 'points', 'timepoints'])
@@ -311,3 +311,9 @@ class Vote(models.Model):
 
     class Meta:
         unique_together = (('user', 'content'), )
+
+    def __str__(self):
+        return '{} {}: {}'.format(
+            self.user.username,
+            {'-1': 'downvoted', '1': 'upvoted'}[str(self.value)],
+            self.content.title)
