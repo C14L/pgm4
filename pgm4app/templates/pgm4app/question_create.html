@@ -2,12 +2,17 @@
 {% load i18n %}
 
 {% block content %}
-  <h1>{% trans 'Ask a questions' %}</h1>
+  {% if user.is_authenticated %}
+    <h1>{% trans 'Ask a question' %}</h1>
+  {% else %}
+    <h1>{% trans 'Ask a question anonymously' %}</h1>
+    {% url 'account_login' as login_link %}
+    <p>{% blocktrans %}You will not be able to edit or delete an anonymous question. <a href="{{ login_link }}">Sign in before asking</a> to take ownership of your question.{% endblocktrans %}</p>
+  {% endif %}
 
   <form action="" method="POST">{% csrf_token %}{{ form.as_p }}
     <p>
-      <input type="submit" value="{% trans 'Publish the question' %}">&nbsp; &nbsp;
-      <a href="{% url 'question-list' %}">{% trans 'Recent questions' %}</a>
+      <input type="submit" value="{% trans 'publish the question' %}">
     </p>
   </form>
 {% endblock %}

@@ -38,22 +38,19 @@ if DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.sites',  # required by allauth
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'markdown_deux',
-    'django_bleach',
+    'django.contrib.sites',  # required by allauth
 
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.instagram',
+    # 'allauth.socialaccount.providers.instagram',
+    # 'allauth.socialaccount.providers.twitter',
 
     # ... include the providers you want to enable:
     # 'allauth.socialaccount.providers.amazon',
@@ -82,11 +79,16 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.stripe',
     # 'allauth.socialaccount.providers.tumblr',
     # 'allauth.socialaccount.providers.twitch',
-    # 'allauth.socialaccount.providers.twitter',
     # 'allauth.socialaccount.providers.vimeo',
     # 'allauth.socialaccount.providers.vk',
     # 'allauth.socialaccount.providers.weibo',
     # 'allauth.socialaccount.providers.xing',
+
+    'markdown_deux',
+    'django_bleach',
+
+    'django.contrib.admin',
+    'django.contrib.admindocs',
 
     'pgm4app',
 ]
@@ -112,9 +114,9 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -173,9 +175,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploaded_files')
 
 AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-    # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
@@ -220,14 +220,28 @@ BLEACH_DEFAULT_WIDGET = 'wysiwyg.widgets.WysiwygWidget'
 MARKDOWN_DEUX_STYLES = {
     "default": {
         "extras": {
-            "code-friendly": None,
+            "code-friendly": True,
         },
         "safe_mode": "escape",
     },
     "trusted": {
         "extras": {
-            "code-friendly": None,
+            "code-friendly": True,
         },
         "safe_mode": False,
     },
 }
+
+# --- django-allauth -----------------------------------------------------------
+
+# http://django-allauth.readthedocs.io/en/latest/providers.html#facebook
+SOCIALACCOUNT_PROVIDERS = {'facebook': {
+    'METHOD': 'oauth2',
+    'SCOPE': ['email', 'public_profile', 'user_friends'],
+    'AUTH_PARAMS': {},
+    'FIELDS': ['id', 'email', 'name', 'first_name', 'last_name', 'verified',
+               'locale', 'timezone', 'link', 'gender', 'updated_time'],
+    'EXCHANGE_TOKEN': True,
+    'LOCALE_FUNC': lambda request: 'en_US',
+    'VERIFIED_EMAIL': True,  # assume that Fb-provided emails are okay.
+    'VERSION': 'v2.6'}}

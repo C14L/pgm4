@@ -14,12 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 
 import pgm4app.views
 
 urlpatterns = [
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', admin.site.urls),
 
     url(r'^$',
@@ -51,7 +52,7 @@ urlpatterns = [
 
     url(r'^tags/$',
         pgm4app.views.TagListView.as_view(), name='tag-list'),
-    url(r'^tags/(?P<slug>[a-z0-9_-]+)$',
+    url(r'^tags/(?P<slug>[a-z0-9_-]+)/$',
         pgm4app.views.TagDetailView.as_view(), name='tag-detail'),
 
     url(r'^vote/(?P<pk>\d+)/up/$',

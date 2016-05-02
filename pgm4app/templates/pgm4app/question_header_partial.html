@@ -1,22 +1,30 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
-<section class="question header">
+<div class="question header">
   <div class="updown">
-    <form method="POST" action="{% url 'vote-up' object.pk %}">{% csrf_token %}<input type="submit" class="up" value="▲"></form>
-    <div class="points" title="{{ object.up }} | {{ object.down }}">{{ object.points }}</div>
-    <form method="POST" action="{% url 'vote-down' object.pk %}">{% csrf_token %}<input type="submit" class="down" value="▼"></form>
+    <form method="POST" action="{% url 'vote-up' question.pk %}">{% csrf_token %}<input type="submit" class="up" value="▲"></form>
+    <div class="points" title="{{ question.up }} | {{ question.down }}">{{ question.points }}</div>
+    <form method="POST" action="{% url 'vote-down' question.pk %}">{% csrf_token %}<input type="submit" class="down" value="▼"></form>
   </div>
-  <h1 class="question-title"><a href="{{ object.get_absolute_url }}">{{ object.title|bleach }}</a></h1>
+
+  {% if detail == 1 %}
+  <h1 class="question-title"><a href="{{ question.get_absolute_url }}">{{ question.title|bleach }}</a></h1>
+  {% else %}
+  <h2 class="question-title"><a href="{{ question.get_absolute_url }}">{{ question.title|bleach }}</a></h2>
+  {% endif %}
+
   <p class="meta">
-    <a class="username" href="{% url 'user-detail' object.user.username %}">{{ object.user.username }}</a>
-    {% if user.is_authenticated and object.user == user %}
-    (<a class="edit" href="{% url 'question-update' object.pk %}">{% trans 'edit' %}</a>)
+    <a class="username" href="{% url 'user-detail' question.user.username %}">{{ question.user.username }}</a>
+    {% if user.is_authenticated and question.user == user %}
+    (<a class="edit" href="{% url 'question-update' question.pk %}">{% trans 'edit' %}</a>)
     {% endif %}
-    <span class="timestamp" data-timestamp="{{ object.created }}">{{ object.created|timesince }}</span>
+    <span class="timestamp" data-timestamp="{{ question.created }}">{{ question.created|timesince }}</span> ago &mdash;
+    <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_views }}</span> views &mdash;
     <span class="tags list">
-      {% for tag in object.tags.all %}
-      <a class="tag item" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
+      tags:
+      {% for tag in question.tags.all %}
+        <a class="tag item" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
       {% endfor %}
     </span>
   </p>
-</section>
+</div>

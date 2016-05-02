@@ -6,9 +6,8 @@
 
   <form action="" method="POST">{% csrf_token %}{{ form.as_p }}
     <p>
-      <input type="submit" value="{% trans 'Publish your answer' %}">&nbsp; &nbsp;
-      <a href="{% url 'question-detail' question.pk question.slug %}">{% trans 'Cancel' %}</a>
-      <a href="{% url 'question-list' %}">{% trans 'Recent questions' %}</a>
+      <input type="submit" value="{% trans 'publish your answer' %}">&nbsp; &nbsp;
+      <a href="{% url 'question-detail' question.pk question.slug %}">{% trans 'cancel' %}</a>
     </p>
   </form>
 {% endblock %}

@@ -2,69 +2,26 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
-  {% include 'pgm4app/question_header_partial.html' with detail=1 %}
-
-  <section class="question content">
-    <p class="text">{{ object.text|markdown|bleach }}</p>
-  </section>
-
   <section class="question detail">
-    <p class="links">
-      <a class="link-answer-create" href="{% url 'answer-create' object.pk %}">{% trans 'answer this question' %}</a> |
-      <a class="link-comment-create" href="{% url 'comment-create' object.pk %}">{% trans 'add a comment' %}</a> |
-    </p>
+    {% include 'pgm4app/question_header_partial.html' with question=object detail=1 %}
 
-    <section class="comments list">
-      {% for comment in object.children.public.comments %}
-        <p class="comment item">
-          <span class="text">{{ comment.text|bleach }}</span>
-          <span class="seperator">&mdash;</span>
-          <span class="meta">
-            <a class="username" href="{% url 'user-detail' comment.user.username %}">{{ comment.user.username }}</a>
-            {% if user.is_authenticated and comment.user == user %}
-            (<a class="edit" href="{% url 'comment-update' comment.parent.pk comment.pk %}">{% trans 'edit' %}</a>)
-            {% endif %}
-            <span class="timestamp" data-timestamp="{{ comment.created }}">{{ comment.created }}</span>
-          </span>
-        </p>
-      {% endfor %}
-    </section>
+    <div class="question content">
+      <p class="text">{{ object.text|markdown|bleach }}</p>
+    </div>
+
+    <div class="links">
+      <a class="link-answer-create" href="{% url 'answer-create' object.pk %}">{% trans 'answer this question' %}</a> |
+      <a class="link-comment-create" href="{% url 'comment-create' object.pk %}">{% trans 'add a comment' %}</a>
+    </div>
+
+    {% include 'pgm4app/comment_list_partial.html' with comments=object.children.public.comments %}
   </section>
 
   <section class="answers list">
     <h2>{% trans 'Answers' %} ({{ object.children.public.answers | length }})</h2>
 
     {% for answer in object.children.public.answers %}
-      <div class="answer item">
-        <p class="text">{{ answer.text|markdown|bleach }}</p>
-        <p class="meta">
-          <a class="username" href="{% url 'user-detail' answer.user.username %}">{{ answer.user.username }}</a>
-          {% if user.is_authenticated and answer.user == user %}
-          (<a class="edit" href="{% url 'answer-update' object.pk answer.pk %}">{% trans 'edit' %}</a>)
-          {% endif %}
-          <span class="timestamp" data-timestamp="{{ answer.created }}">{{ answer.created }}</span>
-        </p>
-        <p class="links">
-          <a class="link-comment-create" href="{% url 'comment-create' answer.pk %}">{% trans 'add a comment' %}</a>
-        </p>
-
-        <section class="comments list">
-          {% for comment in answer.children.public.comments %}
-            <p class="comment item">
-              <span class="text">{{ comment.text|bleach }}</span>
-              <span class="seperator">&mdash;</span>
-              <span class="meta">
-                <a class="username" href="{% url 'user-detail' comment.user.username %}">{{ comment.user.username }}</a>
-                {% if user.is_authenticated and comment.user == user %}
-                (<a class="edit" href="{% url 'comment-update' comment.parent.pk comment.pk %}">{% trans 'edit' %}</a>)
-                {% endif %}
-                <span class="timestamp" data-timestamp="{{ comment.created }}">{{ comment.created }}</span>
-              </span>
-            </p>
-          {% endfor %}
-        </section>
-
-      </div>
+      {% include 'pgm4app/answer_detail_partial.html' %}
     {% endfor %}
   </section>
 

@@ -5,7 +5,7 @@
   <h1>Questions</h1>
 
   {% if object_list %}
-    {% for object in object_list %}
+    {% for question in object_list %}
       {% include 'pgm4app/question_header_partial.html' with detail=0 %}
     {% endfor %}
   {% else %}

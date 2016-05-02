@@ -4,24 +4,10 @@
 {% block content %}
   <h1>{% blocktrans with tag=object.name %}Questions about {{ tag }}{% endblocktrans %}</h1>
 
-  <ul>
-    {% for item in object.content.public.questions %}
-      <li>
-        <h2><a href="{% url 'question-detail' item.pk item.slug %}">{{ item.title }}</a></h2>
-        <p>{{ item.text }}</p>
-        <p>
-          <a class="username" href="{% url 'user-detail' item.user.username %}">{{ item.user.username }}</a>
-          <span class="timestamp" data-timestamp="{{ item.created }}">{{ item.created }}</span>
-          <span class="tags">
-            {% for tag in item.tags.all %}
-              <a class="tag" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
-            {% endfor %}
-          </span>
-        </p>
-      </li>
-    {% endfor %}
-  </ul>
+  {% for question in object.content.public.questions %}
+    {% include 'pgm4app/question_header_partial.html' with detail=0 %}
+  {% endfor %}
 
-  <p><a href="{% url 'question-create' %}">{% trans 'Ask a question...' %}</a></p>
+  <p><a href="{% url 'question-create' %}?tags={{ object.slug }}">{% trans 'Ask a question...' %}</a></p>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models, IntegrityError
-from django.db.models import Count, When, Case, Q
+from django.db.models import Count, When, Case, Q, F
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -172,6 +172,11 @@ class Content(models.Model):
     def get_absolute_url(self):
         question = self.get_question()
         return reverse('question-detail', args=[question.pk, question.slug])
+
+    def count_view(self):
+        """Increase the view counter by one."""
+        self.count_views += 1
+        self.save(update_fields=['count_views'])
 
     def answers(self, public_only=True):
         if self.content_type == 'q':

@@ -39,7 +39,7 @@ class TagDetailView(DetailView):
 
 
 class QuestionCreateView(CreateView):
-    fields = ['title', 'text']
+    fields = ['title', 'text', 'tags']
     model = Content
     template_name = 'pgm4app/question_create.html'
 
@@ -53,6 +53,12 @@ class QuestionCreateView(CreateView):
     def get_success_url(self):
         kwargs = {'pk': self.object.pk, 'slug': self.object.slug}
         return reverse('question-detail', kwargs=kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        slugs = self.request.GET.get('tags', '').split(' ')
+        context['tags'] = Tag.objects.filter(slug__in=slugs)
+        return context
 
 
 class QuestionUpdateView(UpdateView):
@@ -82,6 +88,11 @@ class QuestionDetailView(DetailView):
     template_name = 'pgm4app/question_detail.html'
     slug_field = 'username'
     slug_url_kwarg = 'username'
+
+    def get_object(self, queryset=None):
+        _object = super().get_object(queryset=queryset)
+        _object.count_view()
+        return _object
 
 
 class AnswerCreateView(CreateView):
