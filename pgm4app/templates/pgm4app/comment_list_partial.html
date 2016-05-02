@@ -2,16 +2,31 @@
 
 <div class="comments list">
   {% for comment in comments %}
-    <p class="comment item">
-      <span class="text">{{ comment.text|bleach }}</span>
-      <span class="seperator">&mdash;</span>
-      <span class="meta">
-        <a class="username" href="{% url 'user-detail' comment.user.username %}">{{ comment.user.username }}</a>
-        {% if user.is_authenticated and comment.user == user %}
-        (<a class="edit" href="{% url 'comment-update' comment.parent.pk comment.pk %}">{% trans 'edit' %}</a>)
-        {% endif %}
-        <span class="timestamp" data-timestamp="{{ comment.created }}">{{ comment.created | timesince }}</span>
-      </span>
-    </p>
+    <div class="comment item" id="c{{ comment.pk }}">
+      <div class="updown">
+        <form method="POST" action="{% url 'vote-up' comment.pk %}" class="{% if comment.is_upvoted %}active{% endif %}">
+          {% csrf_token %}
+          <input type="hidden" name="hash" value="c{{ comment.pk }}">
+          <input type="submit" class="up" value="▲">
+        </form>
+        <div class="points" title="{{ comment.up }} | {{ comment.down }}">{{ comment.points }}</div>
+        <form method="POST" action="{% url 'vote-down' comment.pk %}" class="{% if comment.is_downvoted %}active{% endif %}">
+          {% csrf_token %}
+          <input type="hidden" name="hash" value="c{{ comment.pk }}">
+          <input type="submit" class="down" value="▼">
+        </form>
+      </div>
+      <div class="content">
+        <span class="text">{{ comment.text|bleach }}</span>
+        <span class="seperator">&mdash;</span>
+        <span class="meta">
+          <a class="username" href="{% url 'user-detail' comment.user.username %}">{{ comment.user.username }}</a>
+          {% if user.is_authenticated and comment.user == user %}
+          (<a class="edit" href="{% url 'comment-update' comment.parent.pk comment.pk %}">{% trans 'edit' %}</a>)
+          {% endif %}
+          <span class="timestamp" data-timestamp="{{ comment.created }}">{{ comment.created | timesince }}</span>
+        </span>
+      </div>
+    </div>
   {% endfor %}
 </div>

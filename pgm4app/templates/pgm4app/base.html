@@ -14,24 +14,33 @@
       header a.site-name { font: normal 24px/24px sans-serif; }
       header a.ask { font: normal 16px/24px sans-serif; }
 
-      main { margin: 0; padding: 16px; }
+      main { margin: 0; padding: 8px; }
 
       .messages { list-style: none; margin: 0; padding: 0; position: fixed; top: auto; right: 0; bottom: 16px; left: 0; }
       .messages .message { max-width: 600px; margin: 0 auto; padding: 8px; background-color: rgba(0, 0, 0, 0.82); color: white; }
       .messages .message.hide { transition: 0.3s ease-out; opacity: 0; }
 
-      section.list .item { padding: 4px; margin: 4px; background-color: rgba(0, 255, 0, 0.2); }
-
-      .updown { float: left; background-color: white; margin-right: 8px; }
+      .updown { float: left; background-color: transparent; padding: 0; margin-right: 8px; }
       .updown .points { text-align: center; padding: 2px 0; color: gray; }
       .updown form {  }
-      .updown form input { font-size: 20px; border: none; outline: none; background: none; cursor: pointer; }
+      .updown form input { font-size: 28px; border: none; outline: none; background: none; cursor: pointer; }
+      .updown form.active input { color: #060; }
       .updown form.up {  }
       .updown form.down {  }
 
-      .question.header { overflow: hidden; background-color: rgba(255, 0, 0, 0.05); margin: 8px 0; padding: 0; }
-      .question.header h1 { font-size: 28px; margin: 4px 0; padding: 0; }
+      .question.header { overflow: hidden; margin: 0; padding: 8px; }
+      .question.header h1 { font-size: 28px; margin: 0; padding: 0; }
+      .question.header h2 { font-size: 24px; margin: 0; padding: 0; }
       .question.header p { margin: 0; padding: 0; }
+
+      .comments.list { overflow: hidden; padding: 4px 0 4px 50px; }
+      .comment.item { overflow: hidden; background-color: #E9E9E9; margin: 4px; padding: 4px; }
+      .comment.item .updown { opacity: 0.5; transition: 0.3s ease-in; }
+      .comment.item:hover .updown { opacity: 1; transition: 0.3s ease-out; }
+      .comment.item .updown .points { font-size: 13px; padding: 0; margin: -2px 0; }
+      .comment.item .updown form input { font-size: 14px; }
+      .comment.item .content { font-size: 16px; margin: 0; padding: 4px 0; }
+
     </style>
   </head>
   <body>

@@ -1,20 +1,17 @@
-from symbol import classdef
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template import Template, Context
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView, CreateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from pgm4app.models import Content, Tag
+from pgm4app.models import Content, Tag, Vote
 
 
 class HomeView(TemplateView):
@@ -92,6 +89,13 @@ class QuestionDetailView(DetailView):
 
     def get_object(self, queryset=None):
         _object = super().get_object(queryset=queryset)
+
+        # TODO: make this universal for all Content and more efficient.
+        vote = Vote.objects.filter(
+            content=_object, user=self.request.user).first()
+        _object.is_upvoted = vote and vote.value == 1
+        _object.is_downvoted = vote and vote.value == -1
+
         _object.count_view()
         return _object
 
@@ -218,4 +222,7 @@ class VoteView(View):
     def post(self, *args, **kwargs):
         content = get_object_or_404(Content, pk=kwargs['pk'])
         content.toggle_vote(self.request.user, kwargs['vote'])
-        return HttpResponseRedirect(content.get_absolute_url())
+        _next = self.request.META['HTTP_REFERER']
+        _hash = self.request.POST.get('hash', '')
+        _hash = '#{}'.format(_hash) if _hash else ''
+        return HttpResponseRedirect(_next + _hash)

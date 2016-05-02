@@ -1,10 +1,18 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
-<div class="question header">
+<div class="question header" id="c{{ question.pk }}">
   <div class="updown">
-    <form method="POST" action="{% url 'vote-up' question.pk %}">{% csrf_token %}<input type="submit" class="up" value="▲"></form>
+    <form method="POST" action="{% url 'vote-up' question.pk %}" class="{% if question.is_upvoted %}active{% endif %}">
+      {% csrf_token %}
+      <input type="hidden" name="hash" value="c{{ question.pk }}">
+      <input type="submit" class="up" value="▲">
+    </form>
     <div class="points" title="{{ question.up }} | {{ question.down }}">{{ question.points }}</div>
-    <form method="POST" action="{% url 'vote-down' question.pk %}">{% csrf_token %}<input type="submit" class="down" value="▼"></form>
+    <form method="POST" action="{% url 'vote-down' question.pk %}" class="{% if question.is_downvoted %}active{% endif %}">
+      {% csrf_token %}
+      <input type="hidden" name="hash" value="c{{ question.pk }}">
+      <input type="submit" class="down" value="▼">
+    </form>
   </div>
 
   {% if detail == 1 %}
@@ -13,7 +21,7 @@
   <h2 class="question-title"><a href="{{ question.get_absolute_url }}">{{ question.title|bleach }}</a></h2>
   {% endif %}
 
-  <p class="meta">
+  <div class="meta">
     <a class="username" href="{% url 'user-detail' question.user.username %}">{{ question.user.username }}</a>
     {% if user.is_authenticated and question.user == user %}
     (<a class="edit" href="{% url 'question-update' question.pk %}">{% trans 'edit' %}</a>)
@@ -26,5 +34,5 @@
         <a class="tag item" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
       {% endfor %}
     </span>
-  </p>
+  </div>
 </div>

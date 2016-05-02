@@ -56,6 +56,9 @@ class ContentQuerySet(models.QuerySet):
         Return all questions except for hidden/deleted not written by user
         :param user:
         """
+        # TODO: integrate this into questions() probably as standard and have
+        # TODO: a separate all_questions() method to return all, including
+        # TODO: hidden and deleted questions.
         return self.filter(Q(user=user) |
                            Q(is_hidden=False) | Q(is_deleted=False))
 
