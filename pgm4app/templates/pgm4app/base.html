@@ -8,6 +8,9 @@
       html { box-sizing: border-box; } *, *:before, *:after { box-sizing: inherit; }
       body { margin: 0; padding: 0; }
       a { text-decoration: none; }
+      h1 { font-size: 28px; margin: 0; padding: 0; }
+      h2 { font-size: 24px; margin: 0; padding: 0; }
+      p { margin: 0.5em 0; padding: 0; }
 
       header { background-color: #060; color: white; margin: 0; padding: 8px 16px; }
       header a { color: inherit; }
@@ -20,26 +23,23 @@
       .messages .message { max-width: 600px; margin: 0 auto; padding: 8px; background-color: rgba(0, 0, 0, 0.82); color: white; }
       .messages .message.hide { transition: 0.3s ease-out; opacity: 0; }
 
-      .updown { float: left; background-color: transparent; padding: 0; margin-right: 8px; }
-      .updown .points { text-align: center; padding: 2px 0; color: gray; }
-      .updown form {  }
-      .updown form input { font-size: 28px; border: none; outline: none; background: none; cursor: pointer; }
-      .updown form.active input { color: #060; }
-      .updown form.up {  }
-      .updown form.down {  }
-
-      .question.header { overflow: hidden; margin: 0; padding: 8px; }
-      .question.header h1 { font-size: 28px; margin: 0; padding: 0; }
-      .question.header h2 { font-size: 24px; margin: 0; padding: 0; }
-      .question.header p { margin: 0; padding: 0; }
+      .item { overflow: hidden; margin: 0; padding: 8px; }
+      .item .updown { float: left; background-color: transparent; margin: 0; padding: 0; }
+      .item .updown .points { text-align: center; padding: 2px 0; color: gray; }
+      .item .updown form {  }
+      .item .updown form.up {  }
+      .item .updown form.down {  }
+      .item .updown form input { font-size: 28px; border: none; outline: none; background: none; cursor: pointer; }
+      .item .updown form.active input { color: #060; }
+      .item .content { margin: 0 0 0 50px; }
 
       .comments.list { overflow: hidden; padding: 4px 0 4px 50px; }
       .comment.item { overflow: hidden; background-color: #E9E9E9; margin: 4px; padding: 4px; }
       .comment.item .updown { opacity: 0.5; transition: 0.3s ease-in; }
       .comment.item:hover .updown { opacity: 1; transition: 0.3s ease-out; }
-      .comment.item .updown .points { font-size: 13px; padding: 0; margin: -2px 0; }
-      .comment.item .updown form input { font-size: 14px; }
-      .comment.item .content { font-size: 16px; margin: 0; padding: 4px 0; }
+      .comment.item .updown .points { font-size: 0.85rem; padding: 0; margin: -2px 0; }
+      .comment.item .updown form input { font-size: 0.85rem; }
+      .comment.item .content { font-size: 0.95rem; margin: 0; padding: 4px 0; }
 
     </style>
   </head>
@@ -49,11 +49,11 @@
       <a class="ask" href="{% url 'question-create' %}">{% trans 'ask a question' %}</a>
       <a class="question-list" href="{% url 'question-list' %}">{% trans 'recent questions' %}</a>
       {% if user.is_authenticated %}
-      <a class="user-detail" href="{% url 'user-detail' user.username %}">{{ user.username }}</a>:
-      <a class="logout" href="{% url 'account_logout' %}">{% trans 'logout' %}</a>
+        <a class="user-detail" href="{% url 'user-detail' user.username %}">{{ user.username }}</a>:
+        <a class="logout" href="{% url 'account_logout' %}">{% trans 'logout' %}</a>
       {% else %}
-      <a class="login" href="{% url 'account_login' %}">{% trans 'login' %}</a>
-      <a class="signup" href="{% url 'account_signup' %}">{% trans 'signup' %}</a>
+        <a class="login" href="{% url 'account_login' %}">{% trans 'login' %}</a>
+        <a class="signup" href="{% url 'account_signup' %}">{% trans 'signup' %}</a>
       {% endif %}
     </header>
     <main>
@@ -67,4 +67,48 @@
       </ul>
     {% endif %}
   </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+  <script>
+    $(function(){ 'use strict';
+
+      $('.updown form').on('submit', function (event) {
+        event.preventDefault();
+
+        var $this = $(this);
+        var $otherForm = $this.siblings('form');
+        var $points = $this.siblings('.points');
+        var url = $this.prop('action');
+
+        $.post(url, $.param($(this).serializeArray())).then(function(){
+          var wasActive = $this.hasClass('active');
+          var otherWasActive = $otherForm.hasClass('active');
+          var points = parseInt($points.text());
+
+          $this.removeClass('active');
+          $otherForm.removeClass('active');
+
+          if ($this.hasClass('up')) {
+            if (wasActive) {
+              points -= 1;
+            } else {
+              $this.addClass('active');
+              if (otherWasActive) { points += 2; } else { points += 1; }
+            }
+          } else if ($this.hasClass('down')) {
+            if (wasActive) {
+              points += 1;
+            } else {
+              $this.addClass('active');
+              if (otherWasActive) { points -= 2; } else { points -= 1; }
+            }
+          }
+          $points.text(points);
+        }).catch(function(){
+          console.log('POST error');
+          //pass
+        });
+      });
+
+    });
+  </script>
 </html>

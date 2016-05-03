@@ -1,0 +1,13 @@
+<div class="updown">
+  <form method="POST" action="{% url 'vote-up' obj.pk %}" class="up {% if obj.is_upvoted %}active{% endif %}">
+    {% csrf_token %}
+    <input type="hidden" name="hash" value="c{{ obj.pk }}">
+    <input type="submit" value="▲">
+  </form>
+  <div class="points" title="{{ obj.up }} | {{ obj.down }}">{{ obj.points }}</div>
+  <form method="POST" action="{% url 'vote-down' obj.pk %}" class="down {% if obj.is_downvoted %}active{% endif %}">
+    {% csrf_token %}
+    <input type="hidden" name="hash" value="c{{ obj.pk }}">
+    <input type="submit" value="▼">
+  </form>
+</div>

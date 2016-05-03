@@ -1,33 +1,21 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
 <div class="answer item" id="c{{ answer.pk }}">
-  <div class="updown">
-    <form method="POST" action="{% url 'vote-up' answer.pk %}" class="{% if answer.is_upvoted %}active{% endif %}">
-      {% csrf_token %}
-      <input type="hidden" name="hash" value="c{{ answer.pk }}">
-      <input type="submit" class="up" value="▲">
-    </form>
-    <div class="points" title="{{ answer.up }} | {{ answer.down }}">{{ answer.points }}</div>
-    <form method="POST" action="{% url 'vote-down' answer.pk %}" class="{% if answer.is_downvoted %}active{% endif %}">
-      {% csrf_token %}
-      <input type="hidden" name="hash" value="c{{ answer.pk }}">
-      <input type="submit" class="down" value="▼">
-    </form>
+  {% include 'pgm4app/updown_partial.html' with obj=answer %}
+  <div class="content">
+    <div class="text">
+      {{ answer.text|markdown|bleach }}
+    </div>
+    <div class="meta">
+      <a class="username" href="{% url 'user-detail' answer.user.username %}">{{ answer.user.username }}</a>
+      {% if user.is_authenticated and answer.user == user %}
+      (<a class="edit" href="{% url 'answer-update' object.pk answer.pk %}">{% trans 'edit' %}</a>)
+      {% endif %}
+      <span class="timestamp" data-timestamp="{{ answer.created }}">{{ answer.created }}</span>
+    </div>
+    <div class="links">
+      <a class="link-comment-create" href="{% url 'comment-create' answer.pk %}">{% trans 'add a comment' %}</a>
+    </div>
+    {% include 'pgm4app/comment_list_partial.html' with comments=answer.children.public.comments %}
   </div>
-
-  <div class="text">{{ answer.text|markdown|bleach }}</div>
-
-  <div class="meta">
-    <a class="username" href="{% url 'user-detail' answer.user.username %}">{{ answer.user.username }}</a>
-    {% if user.is_authenticated and answer.user == user %}
-    (<a class="edit" href="{% url 'answer-update' object.pk answer.pk %}">{% trans 'edit' %}</a>)
-    {% endif %}
-    <span class="timestamp" data-timestamp="{{ answer.created }}">{{ answer.created }}</span>
-  </div>
-
-  <div class="links">
-    <a class="link-comment-create" href="{% url 'comment-create' answer.pk %}">{% trans 'add a comment' %}</a>
-  </div>
-
-  {% include 'pgm4app/comment_list_partial.html' with comments=answer.children.public.comments %}
 </div>

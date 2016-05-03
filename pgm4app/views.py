@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -222,6 +222,8 @@ class VoteView(View):
     def post(self, *args, **kwargs):
         content = get_object_or_404(Content, pk=kwargs['pk'])
         content.toggle_vote(self.request.user, kwargs['vote'])
+        if self.request.is_ajax():
+            return JsonResponse({})
         _next = self.request.META['HTTP_REFERER']
         _hash = self.request.POST.get('hash', '')
         _hash = '#{}'.format(_hash) if _hash else ''
