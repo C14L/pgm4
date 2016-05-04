@@ -5,33 +5,40 @@
     <meta charset="UTF-8">
     <title>{% block title %}pre.gunta.me{% endblock %}</title>
     <style>
-      html { box-sizing: border-box; } *, *:before, *:after { box-sizing: inherit; }
-      body { margin: 0; padding: 0; }
-      a { text-decoration: none; }
-      h1 { font-size: 28px; margin: 0; padding: 0; }
-      h2 { font-size: 24px; margin: 0; padding: 0; }
-      p { margin: 0.5em 0; padding: 0; }
+      html { box-sizing: border-box; font: normal 16px/16px sans-serif; }
+      *, *:before, *:after { box-sizing: inherit; font: inherit; }
+      body { margin: 0; padding: 0; padding-top: 48px; }
+      a, a:hover { text-decoration: none; }
+      h1 { font-size: 28px; line-height: 32px; margin: 0; padding: 0; }
+      h2 { font-size: 24px; line-height: 28px; margin: 0; padding: 0; }
+      p { font-size: 16px; line-height: 24px; margin: 0; padding: 0; }
 
-      header { background-color: #060; color: white; margin: 0; padding: 8px 16px; }
-      header a { color: inherit; }
-      header a.site-name { font: normal 24px/24px sans-serif; }
-      header a.ask { font: normal 16px/24px sans-serif; }
+      header { position: fixed; top: 0; right: 0; bottom: auto; left: 0; height: 48px; background-color: rgba(255, 255, 255, 0.82); color: #333; margin: 0; padding: 0; font-size: 0; box-shadow: 0 0 16px rgba(0, 0, 0, 0.32); }
+      header a, header span { display: inline-block; color: inherit; vertical-align: middle; }
+      header a.site-name { font: normal 24px/48px sans-serif; margin: 0; padding: 0 16px; }
+      header .header-nav { font-size: 0; vertical-align: middle; float: right; }
+      header .header-nav a { font: normal 16px/48px sans-serif; border-left: 1px solid rgba(255, 255, 255, 0.15); border-right: 1px solid rgba(0, 0, 0, 0.3); margin: 0; padding: 0 16px; }
+      header .header-nav a:first-of-type { border-left: none; font-weight: bold; }
+      header .header-nav a:last-of-type { border-right: none; }
 
-      main { margin: 0; padding: 8px; }
+      header .header-nav a.active { position: relative; }
+      header .header-nav a.active:after { content: '▲'; position: absolute; top: auto; right: 0; bottom: -16px; left: 0; text-align: center; color: rgba(0, 0, 0, 0.32); }
+
+      main { margin: 0 auto; padding: 8px; max-width: 800px; }
 
       .messages { list-style: none; margin: 0; padding: 0; position: fixed; top: auto; right: 0; bottom: 16px; left: 0; }
       .messages .message { max-width: 600px; margin: 0 auto; padding: 8px; background-color: rgba(0, 0, 0, 0.82); color: white; }
       .messages .message.hide { transition: 0.3s ease-out; opacity: 0; }
 
-      .item { overflow: hidden; margin: 0; padding: 8px; }
+      .item { overflow: hidden; margin: 0; padding: 8px 0; }
       .item .updown { float: left; background-color: transparent; margin: 0; padding: 0; }
       .item .updown .points { text-align: center; padding: 2px 0; color: gray; }
       .item .updown form {  }
       .item .updown form.up {  }
       .item .updown form.down {  }
-      .item .updown form input { font-size: 28px; border: none; outline: none; background: none; cursor: pointer; }
+      .item .updown form input { font-size: 28px; line-height: 28px; border: none; outline: none; background: none; color: gray; cursor: pointer; }
       .item .updown form.active input { color: #060; }
-      .item .content { margin: 0 0 0 50px; }
+      .item .content { margin: 0 0 0 50px; padding: 0; }
 
       .comments.list { overflow: hidden; padding: 4px 0 4px 50px; }
       .comment.item { overflow: hidden; background-color: #E9E9E9; margin: 4px; padding: 4px; }
@@ -46,15 +53,21 @@
   <body>
     <header>
       <a class="site-name" href="{% url 'home' %}">pre.gunta.me</a>
-      <a class="ask" href="{% url 'question-create' %}">{% trans 'ask a question' %}</a>
-      <a class="question-list" href="{% url 'question-list' %}">{% trans 'recent questions' %}</a>
-      {% if user.is_authenticated %}
-        <a class="user-detail" href="{% url 'user-detail' user.username %}">{{ user.username }}</a>:
-        <a class="logout" href="{% url 'account_logout' %}">{% trans 'logout' %}</a>
-      {% else %}
-        <a class="login" href="{% url 'account_login' %}">{% trans 'login' %}</a>
-        <a class="signup" href="{% url 'account_signup' %}">{% trans 'signup' %}</a>
-      {% endif %}
+      <span class="header-nav">
+        <a class="ask" href="{% url 'question-create' %}">{% trans 'ask a question' %}</a>
+
+        <a class="question-list{% if active_sort_order == 'hot' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'hot' %}</a>
+        <a class="question-list{% if active_sort_order == 'new' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'new' %}</a>
+        <a class="question-list{% if active_sort_order == 'top' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'top' %}</a>
+
+        {% if user.is_authenticated %}
+          <a class="user-detail" href="{% url 'user-detail' user.username %}">{% trans 'your questions' %}</a>:
+          <a class="logout" href="{% url 'account_logout' %}">{% trans 'logout' %}</a>
+        {% else %}
+          <a class="login" href="{% url 'account_login' %}">{% trans 'login' %}</a>
+          <a class="signup" href="{% url 'account_signup' %}">{% trans 'signup' %}</a>
+        {% endif %}
+      </span>
     </header>
     <main>
       {% block content %}{% endblock %}
