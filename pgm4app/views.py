@@ -77,12 +77,19 @@ class QuestionUpdateView(UpdateView):
 
 
 class QuestionListView(ListView):
-    queryset = Content.objects.public().questions()
     template_name = 'pgm4app/question_list.html'
+
+    def _get_order(self):
+        order = self.request.GET.get('order', 'hot')
+        return order if order in ['hot', 'new', 'top'] else 'hot'
+
+    def get_queryset(self):
+        order = self._get_order()
+        return Content.objects.public().questions().order(order)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_sort_order'] = 'hot'
+        context['active_sort_order'] = self._get_order()
         return context
 
 

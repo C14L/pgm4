@@ -57,8 +57,8 @@
         <a class="ask" href="{% url 'question-create' %}">{% trans 'ask a question' %}</a>
 
         <a class="question-list{% if active_sort_order == 'hot' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'hot' %}</a>
-        <a class="question-list{% if active_sort_order == 'new' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'new' %}</a>
-        <a class="question-list{% if active_sort_order == 'top' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'top' %}</a>
+        <a class="question-list{% if active_sort_order == 'new' %} active{% endif %}" href="{% url 'question-list' %}?order=new">{% trans 'new' %}</a>
+        <a class="question-list{% if active_sort_order == 'top' %} active{% endif %}" href="{% url 'question-list' %}?order=top">{% trans 'top' %}</a>
 
         {% if user.is_authenticated %}
           <a class="user-detail" href="{% url 'user-detail' user.username %}">{% trans 'your questions' %}</a>:

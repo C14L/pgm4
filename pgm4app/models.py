@@ -55,8 +55,16 @@ class ContentQuerySet(models.QuerySet):
         raise NotImplementedError('Annotate is_upvoted and is_downvoted on the '
                                   'Queryset is not implemented.')
 
+    def order(self, name):
+        if name == 'hot':
+            return self.order_by('-timepoints')
+        elif name == 'new':
+            return self.order_by('-created')
+        elif name == 'top':
+            return self.order_by('-points')
+
     def questions(self):
-        return self.filter(content_type='q').order_by('-timepoints')
+        return self.filter(content_type='q')
 
     def answers(self):
         return self.filter(content_type='a').order_by('is_accepted',
