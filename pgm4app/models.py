@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models, IntegrityError
-from django.db.models import Count, When, Case, Q, F
+from django.db.models import Count, When, Case, Q, Sum
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -33,11 +33,34 @@ content_type_choices = (('q', 'question'), ('a', 'answer'), ('c', 'comment'))
 
 class ContentQuerySet(models.QuerySet):
 
+    def for_user(self, user):
+        """
+        # ERROR: this returns one Content object for every related Vote object.
+        return self.annotate(
+            is_upvoted=Case(When(
+                Q(votes__user=user) & Q(votes__value=1), then=True),
+                default=False, output_field=models.BooleanField()),
+            is_downvoted=Case(When(
+                Q(votes__user=user) & Q(votes__value=-1), then=True),
+                default=False, output_field=models.BooleanField()))
+
+        # ERROR: This can trivially be converted into is_upvote and is_downvote
+        # by looking at num_votes (either 1 or -1) but that would still convert
+        # the QS into a list.
+        return self.annotate(num_votes=Sum(Case(
+                    When(Q(votes__user__pk=1) & Q(votes__value=1), then=1),
+                    When(Q(votes__user__pk=1) & Q(votes__value=-1), then=-1),
+                    default=0, output_field=models.IntegerField())))
+        """
+        raise NotImplementedError('Annotate is_upvoted and is_downvoted on the '
+                                  'Queryset is not implemented.')
+
     def questions(self):
         return self.filter(content_type='q').order_by('-timepoints')
 
     def answers(self):
-        return self.filter(content_type='a').order_by('is_accepted', '-timepoints')
+        return self.filter(content_type='a').order_by('is_accepted',
+                                                      '-timepoints')
 
     def comments(self):
         return self.filter(content_type='c').order_by('id')
@@ -83,8 +106,8 @@ class ContentQuerySet(models.QuerySet):
         return self.all().public().questions().without_children()
 
     def questions_without_accepted_answer(self):
-        return self.all().public().questions().annotate(
-            count=Count(Case(When(children__is_accepted=True, then=1),
+        return self.all().public().questions().annotate(count=Count(Case(
+            When(children__is_accepted=True, then=1),
             output_field=models.IntegerField()))).filter(count__gt=0)
 
 
@@ -175,6 +198,11 @@ class Content(models.Model):
     def get_absolute_url(self):
         question = self.get_question()
         return reverse('question-detail', args=[question.pk, question.slug])
+
+    def attach_user_vote(self, user):
+        vote = Vote.objects.filter(content=self, user=user).first()
+        self.is_upvoted = vote and vote.value == 1
+        self.is_downvoted = vote and vote.value == -1
 
     def count_view(self):
         """Increase the view counter by one."""
@@ -307,7 +335,8 @@ class Vote(models.Model):
     user = models.ForeignKey(
         User, models.CASCADE, related_name='votes', null=False, editable=False)
     content = models.ForeignKey(
-        Content, models.CASCADE, related_name='votes', null=False, editable=False)
+        Content, models.CASCADE, related_name='votes', null=False,
+        editable=False)
     value = models.SmallIntegerField(null=False, editable=False)
 
     objects = VoteQuerySet.as_manager()
