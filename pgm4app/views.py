@@ -11,7 +11,8 @@ from django.views.generic import TemplateView, CreateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from pgm4app.models import Content, Tag, Vote
+from pgm4app.forms import AskForm
+from pgm4app.models import Content, Tag
 
 
 class HomeView(TemplateView):
@@ -37,8 +38,7 @@ class TagDetailView(DetailView):
 
 
 class QuestionCreateView(CreateView):
-    fields = ['title', 'text', 'tags']
-    model = Content
+    form_class = AskForm
     template_name = 'pgm4app/question_create.html'
 
     def form_valid(self, form):
@@ -80,6 +80,11 @@ class QuestionListView(ListView):
     queryset = Content.objects.public().questions()
     template_name = 'pgm4app/question_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_sort_order'] = 'hot'
+        return context
+
 
 class QuestionDetailView(DetailView):
     queryset = Content.objects.public().questions()
@@ -89,13 +94,7 @@ class QuestionDetailView(DetailView):
 
     def get_object(self, queryset=None):
         _object = super().get_object(queryset=queryset)
-
-        # TODO: make this universal for all Content and more efficient.
-        vote = Vote.objects.filter(
-            content=_object, user=self.request.user).first()
-        _object.is_upvoted = vote and vote.value == 1
-        _object.is_downvoted = vote and vote.value == -1
-
+        _object.attach_user_vote(self.request.user)
         _object.count_view()
         return _object
 
@@ -224,7 +223,7 @@ class VoteView(View):
         content.toggle_vote(self.request.user, kwargs['vote'])
         if self.request.is_ajax():
             return JsonResponse({})
-        _next = self.request.META['HTTP_REFERER']
+        _next = self.request.META.get('HTTP_REFERER', content.get_absolute_url())
         _hash = self.request.POST.get('hash', '')
         _hash = '#{}'.format(_hash) if _hash else ''
         return HttpResponseRedirect(_next + _hash)
