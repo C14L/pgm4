@@ -1,7 +1,7 @@
-{% load i18n markdown_deux_tags bleach_tags %}
+{% load pgm4tags i18n markdown_deux_tags bleach_tags %}
 
 <div class="comments list">
-  {% for comment in comments %}
+  {% for comment in comments|complete_content_list_for_user:user %}
     <div class="comment item" id="c{{ comment.pk }}">
       {% include 'pgm4app/updown_partial.html' with obj=comment %}
       <div class="content">

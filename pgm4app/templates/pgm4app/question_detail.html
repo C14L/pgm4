@@ -1,5 +1,5 @@
 {% extends "pgm4app/base.html" %}
-{% load i18n markdown_deux_tags bleach_tags %}
+{% load pgm4tags i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
   <section class="question detail">
@@ -20,7 +20,7 @@
   <section class="answers list">
     <h2>{% trans 'Answers' %} ({{ object.children.public.answers | length }})</h2>
 
-    {% for answer in object.children.public.answers %}
+    {% for answer in object.children.public.answers|complete_content_list_for_user:user %}
       {% include 'pgm4app/answer_detail_partial.html' %}
     {% endfor %}
   </section>

@@ -14,6 +14,8 @@
       (<a class="edit" href="{% url 'question-update' question.pk %}">{% trans 'edit' %}</a>)
       {% endif %}
       <span class="timestamp" data-timestamp="{{ question.created }}">{{ question.created|timesince }}</span> ago &mdash;
+      <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_answers }}</span> answers,
+      <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_comments }}</span> comments,
       <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_views }}</span> views &mdash;
       <span class="tags list">
         tags:
