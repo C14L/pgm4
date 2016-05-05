@@ -6,7 +6,7 @@
     {% include 'pgm4app/question_header_partial.html' with question=object detail=1 %}
 
     <div class="question content">
-      <p class="text">{{ object.text|markdown|bleach }}</p>
+      {{ object.text|markdown|bleach }}
     </div>
 
     <div class="links">
@@ -18,7 +18,7 @@
   </section>
 
   <section class="answers list">
-    <h2>{% trans 'Answers' %} ({{ object.children.public.answers | length }})</h2>
+    <h2>{% trans 'Answers' %} <span class="count">({{ object.children.public.answers | length }})</span></h2>
 
     {% for answer in object.children.public.answers|complete_content_list_for_user:user %}
       {% include 'pgm4app/answer_detail_partial.html' %}

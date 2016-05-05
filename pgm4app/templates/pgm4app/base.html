@@ -5,12 +5,15 @@
     <meta charset="UTF-8">
     <title>{% block title %}pre.gunta.me{% endblock %}</title>
     <style>
-      html { box-sizing: border-box; font: normal 16px/16px sans-serif; }
+/* ! normalize.min.css */progress,sub,sup{vertical-align:baseline}button,hr,input{ overflow:visible}html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{ margin:0} figcaption, menu,article,aside,details,figure,footer,header,main,nav,section,summary{display:block}audio,canvas,progress,video{ display:inline-block}audio:not([controls]){ display:none;height:0} [hidden],template{ display:none}a{ background-color:transparent;-webkit-text-decoration-skip:objects}a:active,a:hover{outline-width:0}abbr[title]{ border-bottom:none;text-decoration:underline;text-decoration:underline dotted}b,strong{font-weight:bolder}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{ background-color:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}img{ border-style:none}svg:not(:root){overflow:hidden}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}button,input,select,textarea{font:inherit;margin:0}optgroup{font-weight:700}button,input{}button,select{text-transform:none}[type=submit], [type=reset],button,html [type=button]{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:ButtonText dotted 1px}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}textarea{overflow:auto}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{ -webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-cancel-button,[type=search]::-webkit-search-decoration{ -webkit-appearance:none}::-webkit-input-placeholder{color:inherit;opacity:.54}::-webkit-file-upload-button{ -webkit-appearance:button;font:inherit}
+
+      html { box-sizing: border-box; font: normal 16px/16px "Georgia", serif; }
       *, *:before, *:after { box-sizing: inherit; font: inherit; }
       body { margin: 0; padding: 0; padding-top: 48px; }
+
       a, a:hover { text-decoration: none; }
-      h1 { font-size: 28px; line-height: 32px; margin: 0; padding: 0; }
-      h2 { font-size: 24px; line-height: 28px; margin: 0; padding: 0; }
+      h1 { font-size: 28px; line-height: 32px; margin: 16px 0; padding: 0; }
+      h2 { font-size: 24px; line-height: 28px; margin: 16px 0; padding: 0; }
       p { font-size: 16px; line-height: 24px; margin: 0; padding: 0; }
 
       header { position: fixed; top: 0; right: 0; bottom: auto; left: 0; height: 48px; background-color: rgba(255, 255, 255, 0.82); color: #333; margin: 0; padding: 0; font-size: 0; box-shadow: 0 0 16px rgba(0, 0, 0, 0.32); }
@@ -26,10 +29,41 @@
 
       main { margin: 0 auto; padding: 8px; max-width: 800px; }
 
+      form ul.errorlist { list-style: none; margin: 0; padding: 0; }
+      form ul.errorlist li { display: inline-block; background: #C00; color: #FFF; margin: 4px; padding: 4px 8px; }
+
+      /* Ask a question, answer a question, add a comment. */
+      form.content-form { display: block; }
+      form.content-form .helptext { display: none; }
+
+      /* Ask a question */
+      form.content-form.question-form {  }
+      form.content-form.question-form p { margin: 16px 0; }
+      form.content-form.question-form [name] { display: block; margin: 0; padding: 8px; font-size: 1.5rem; background-color: #FFF; }
+      form.content-form.question-form [name="title"] { width: 100%; height: 2.5em; }
+      form.content-form.question-form [name="text"] { width: 100%; height: 8em; }
+      form.content-form.question-form ul#id_tags { list-style: none; margin: 0; padding: 0; }
+      form.content-form.question-form ul#id_tags li { display: inline-block; margin: 0; padding: 0; }
+      form.content-form.question-form ul#id_tags li label { display: inline-block; font-size: 17px; margin: 2px; padding: 10px; background-color: #BBB; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); color: white; position: relative; padding-left: 28px; border-top-left-radius: 16px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 16px; cursor: pointer; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25); }
+      form.content-form.question-form ul#id_tags li label input { display: inline; font-size: 18px; width: 0px; }
+      form.content-form.question-form ul#id_tags li label input:before { content: '❋'; position: absolute; left: 8px; color: rgba(0, 0, 0, 0.5); }
+      form.content-form.question-form ul#id_tags li label input:checked:before { color: rgba(0, 255, 255, 0.75); }
+
+      /* List of tabs next to questions. */
+      .tags.list { display: block; font-size: 0; }
+      .tags.list > a.tag.item { display: inline-block; font-size: 13px; margin: 4px; padding: 6px; background-color: #BBB; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); color: white; position: relative; padding-left: 24px; border-top-left-radius: 16px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 16px; cursor: pointer; box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25); }
+      .tags.list > a.tag.item:before { content: '❋'; text-shadow: none; position: absolute; left: 8px; color: rgba(0, 255, 255, 0.75); }
+
+      form.content-form.answer-form {  }
+
+      form.content-form.comment-form {  }
+
+      /*  */
       .messages { list-style: none; margin: 0; padding: 0; position: fixed; top: auto; right: 0; bottom: 16px; left: 0; }
       .messages .message { max-width: 600px; margin: 0 auto; padding: 8px; background-color: rgba(0, 0, 0, 0.82); color: white; }
       .messages .message.hide { transition: 0.3s ease-out; opacity: 0; }
 
+      /* Any Content item. */
       .item { overflow: hidden; margin: 0; padding: 8px 0; }
       .item .updown { float: left; background-color: transparent; margin: 0; padding: 0; }
       .item .updown .points { text-align: center; padding: 2px 0; color: gray; }
@@ -38,7 +72,13 @@
       .item .updown form.down {  }
       .item .updown form input { font-size: 28px; line-height: 28px; border: none; outline: none; background: none; color: gray; cursor: pointer; }
       .item .updown form.active input { color: #060; }
+      .item h1 { margin: 0; }
+      .item h2 { margin: 0 0 8px 0; color: #333; }
+      .item h2 a { color: inherit; }
       .item .content { margin: 0 0 0 50px; padding: 0; }
+
+      .question.content { margin: 16px; }
+      .question.content p { margin: 8px 0; }
 
       .comments.list { overflow: hidden; padding: 4px 0 4px 50px; }
       .comment.item { overflow: hidden; background-color: #E9E9E9; margin: 4px; padding: 4px; }
@@ -54,18 +94,22 @@
     <header>
       <a class="site-name" href="{% url 'home' %}">pre.gunta.me</a>
       <span class="header-nav">
-        <a class="ask" href="{% url 'question-create' %}">{% trans 'ask a question' %}</a>
+        <a class="ask{% if active_on_navbar == 'home' %} active{% endif %}"
+           href="{% url 'question-create' %}{% if tag %}?tags={{ tag }}{% endif %}">{% trans 'ask a question' %}</a>
 
-        <a class="question-list{% if active_sort_order == 'hot' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'hot' %}</a>
-        <a class="question-list{% if active_sort_order == 'new' %} active{% endif %}" href="{% url 'question-list' %}?order=new">{% trans 'new' %}</a>
-        <a class="question-list{% if active_sort_order == 'top' %} active{% endif %}" href="{% url 'question-list' %}?order=top">{% trans 'top' %}</a>
-
+        <a class="question-list{% if active_on_navbar == 'hot' %} active{% endif %}" href="{% url 'question-list' %}">{% trans 'hot' %}</a>
+        <a class="question-list{% if active_on_navbar == 'new' %} active{% endif %}" href="{% url 'question-list' %}?order=new">{% trans 'new' %}</a>
+        <a class="question-list{% if active_on_navbar == 'top' %} active{% endif %}" href="{% url 'question-list' %}?order=top">{% trans 'top' %}</a>
         {% if user.is_authenticated %}
-          <a class="user-detail" href="{% url 'user-detail' user.username %}">{% trans 'your questions' %}</a>:
+          <a class="user-detail{% if active_on_navbar == 'profile' %} active{% endif %}" href="{% url 'user-detail' user.username %}">{% trans 'your questions' %}</a>:
+        {% else %}
+        {% endif %}
+        <a class="tag-list{% if active_on_navbar == 'tags' %} active{% endif %}" href="{% url 'tag-list' %}">{% trans 'tags' %}</a>
+        {% if user.is_authenticated %}
           <a class="logout" href="{% url 'account_logout' %}">{% trans 'logout' %}</a>
         {% else %}
-          <a class="login" href="{% url 'account_login' %}">{% trans 'login' %}</a>
-          <a class="signup" href="{% url 'account_signup' %}">{% trans 'signup' %}</a>
+          <a class="login{% if active_on_navbar == 'login' %} active{% endif %}" href="{% url 'account_login' %}">{% trans 'login' %}</a>
+          <a class="signup{% if active_on_navbar == 'signup' %} active{% endif %}" href="{% url 'account_signup' %}">{% trans 'signup' %}</a>
         {% endif %}
       </span>
     </header>

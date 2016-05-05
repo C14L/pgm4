@@ -3,11 +3,7 @@
 
 {% block content %}
   <h1>{% blocktrans with tag=object.name %}Questions about {{ tag }}{% endblocktrans %}</h1>
-
   {% for question in object.content.public.questions %}
     {% include 'pgm4app/question_header_partial.html' with detail=0 %}
   {% endfor %}
-
-  <p><a href="{% url 'question-create' %}?tags={{ object.slug }}">{% trans 'Ask a question...' %}</a></p>
-
 {% endblock %}

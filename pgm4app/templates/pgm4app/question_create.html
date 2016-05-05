@@ -10,9 +10,8 @@
     <p>{% blocktrans %}You will not be able to edit or delete an anonymous question. <a href="{{ login_link }}">Sign in before asking</a> to take ownership of your question.{% endblocktrans %}</p>
   {% endif %}
 
-  <form action="" method="POST">{% csrf_token %}{{ form.as_p }}
-    <p>
-      <input type="submit" value="{% trans 'publish the question' %}">
-    </p>
+  <form class="question-form content-form" action="" method="POST">{% csrf_token %}
+    {{ form.as_p }}
+    <p><input type="submit" value="{% trans 'publish the question' %}"></p>
   </form>
 {% endblock %}
