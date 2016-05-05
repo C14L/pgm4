@@ -28,18 +28,40 @@ class UserDetailView(DetailView):
     slug_field = 'username'
     slug_url_kwarg = 'username'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_on_navbar'] = 'profile'
+        return context
+
 
 class TagListView(ListView):
     model = Tag
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_on_navbar'] = 'tags'
+        return context
 
 
 class TagDetailView(DetailView):
     model = Tag
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_on_navbar'] = 'tags'
+        return context
+
 
 class QuestionCreateView(CreateView):
     form_class = AskForm
     template_name = 'pgm4app/question_create.html'
+
+    def get_initial(self):
+        # When called with a tags param (e.g. "?tags=sometag+anothertag") then
+        # find verify tags exist and pre-select them in the form.
+        slug_list = self.request.GET.get('tags', '').split(' ')
+        tags = Tag.objects.filter(slug__in=slug_list)
+        return {'tags': tags}
 
     def form_valid(self, form):
         form.instance.content_type = Content.get_content_type_id('question')
@@ -49,19 +71,12 @@ class QuestionCreateView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        kwargs = {'pk': self.object.pk, 'slug': self.object.slug}
-        return reverse('question-detail', kwargs=kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        slugs = self.request.GET.get('tags', '').split(' ')
-        context['tags'] = Tag.objects.filter(slug__in=slugs)
-        return context
+        return self.object.get_absolute_url()
 
 
 class QuestionUpdateView(UpdateView):
-    fields = ['title', 'text']
     model = Content
+    form_class = AskForm
     template_name = 'pgm4app/question_create.html'
 
     def get_queryset(self):
@@ -72,8 +87,7 @@ class QuestionUpdateView(UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        kwargs = {'pk': self.object.pk, 'slug': self.object.slug}
-        return reverse('question-detail', kwargs=kwargs)
+        return self.object.get_absolute_url()
 
 
 class QuestionListView(ListView):
@@ -89,7 +103,7 @@ class QuestionListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_sort_order'] = self._get_order()
+        context['active_on_navbar'] = self._get_order()
         return context
 
 
