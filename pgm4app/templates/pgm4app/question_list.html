@@ -3,7 +3,6 @@
 
 {% block content %}
   <h1>Questions</h1>
-
   {% if object_list %}
     {% for question in object_list|complete_content_list_for_user:user %}
       {% include 'pgm4app/question_header_partial.html' with detail=0 %}
@@ -11,7 +10,4 @@
   {% else %}
     <p>{% trans 'No questions found.' %}</p>
   {% endif %}
-
-  <p><a href="{% url 'question-create' %}">{% trans 'Ask a question...' %}</a></p>
-
 {% endblock %}

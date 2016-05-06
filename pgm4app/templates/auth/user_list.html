@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Users</h2>
-    <ul>
+    <ul class="user-list">
         {% for item in object_list %}
             <li><a href="{% url 'user-detail' item.username %}">{{ item.username }}</a></li>
         {% endfor %}

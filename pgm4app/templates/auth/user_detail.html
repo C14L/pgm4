@@ -1,5 +1,13 @@
 {% extends "pgm4app/base.html" %}
+{% load pgm4tags i18n markdown_deux_tags bleach_tags %}
 
 {% block content %}
-    <h1>Hello, user {{ object.username }}!</h1>
+  <h1>Hey, {{ object.username }}!</h1>
+  {% if questions %}
+    {% for question in questions|complete_content_list_for_user:user %}
+      {% include 'pgm4app/question_header_partial.html' with detail=0 %}
+    {% endfor %}
+  {% else %}
+    <p>{% trans 'No questions found.' %}</p>
+  {% endif %}
 {% endblock %}

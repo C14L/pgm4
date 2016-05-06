@@ -31,6 +31,8 @@ class UserDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_on_navbar'] = 'profile'
+        context['questions'] = \
+            Content.objects.questions().by_user(self.request.user)
         return context
 
 
