@@ -1,6 +1,6 @@
 {% load i18n markdown_deux_tags bleach_tags %}
 
-<div class="question item header" id="c{{ question.pk }}">
+<div class="question item header" id="c{{ question.pk }}" data-points="{{ question.points }}">
   {% include 'pgm4app/updown_partial.html' with obj=question %}
   <div class="content">
     {% if detail == 1 %}
@@ -11,18 +11,17 @@
     <div class="meta">
       <a class="username" href="{% url 'user-detail' question.user.username %}">{{ question.user.username }}</a>
       {% if user.is_authenticated and question.user == user %}
-      (<a class="edit" href="{% url 'question-update' question.pk %}">{% trans 'edit' %}</a>)
+        (<a class="edit" href="{% url 'question-update' question.pk %}">{% trans 'edit' %}</a>)
       {% endif %}
       <span class="timestamp" data-timestamp="{{ question.created }}">{{ question.created|timesince }}</span> ago &mdash;
-      <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_answers }}</span> answers,
-      <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_comments }}</span> comments,
-      <span class="count-views" data-count-views="{{ question.count_views }}">{{ question.count_views }}</span> views &mdash;
-      <span class="tags list">
-        tags:
-        {% for tag in question.tags.all %}
-          <a class="tag item" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
-        {% endfor %}
-      </span>
+      <span class="count-answers" data-count="{{ question.count_answers }}">{{ question.count_answers }}</span> answers,
+      <span class="count-comments" data-count="{{ question.count_comments }}">{{ question.count_comments }}</span> comments,
+      <span class="count-views" data-count="{{ question.count_views }}">{{ question.count_views }}</span> views &mdash;
+    </div>
+    <div class="tags list">
+      {% for tag in question.tags.all %}
+        <a class="tag item {% if detail == 1 %}medium{% else %}small{% endif %}" href="{% url 'tag-detail' tag.slug %}">{{ tag.name }}</a>
+      {% endfor %}
     </div>
   </div>
 </div>

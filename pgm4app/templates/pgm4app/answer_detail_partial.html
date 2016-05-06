@@ -16,6 +16,6 @@
     <div class="links">
       <a class="link-comment-create" href="{% url 'comment-create' answer.pk %}">{% trans 'add a comment' %}</a>
     </div>
-    {% include 'pgm4app/comment_list_partial.html' with comments=answer.children.public.comments %}
+    {% include 'pgm4app/comment_list_partial.html' with comments=answer.children.public.comments parent=answer %}
   </div>
 </div>

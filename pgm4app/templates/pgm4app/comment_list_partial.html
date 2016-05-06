@@ -17,4 +17,5 @@
       </div>
     </div>
   {% endfor %}
+  <a class="link-comment-create" href="{% url 'comment-create' parent.pk %}">{% trans 'add a comment' %}</a>
 </div>

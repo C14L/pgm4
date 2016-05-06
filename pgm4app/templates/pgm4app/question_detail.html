@@ -10,14 +10,14 @@
     </div>
 
     <div class="links">
-      <a class="link-answer-create" href="{% url 'answer-create' object.pk %}">{% trans 'answer this question' %}</a> |
-      <a class="link-comment-create" href="{% url 'comment-create' object.pk %}">{% trans 'add a comment' %}</a>
+      <a class="link-answer-create" href="{% url 'answer-create' object.pk %}">{% trans 'answer this question' %}</a>
+      <a class="link-answer-list" href="#answer-list">{% trans 'jump to answers' %}</a>
     </div>
 
-    {% include 'pgm4app/comment_list_partial.html' with comments=object.children.public.comments %}
+    {% include 'pgm4app/comment_list_partial.html' with comments=object.children.public.comments parent=object %}
   </section>
 
-  <section class="answers list">
+  <section class="answers list" id="answer-list">
     <h2>{% trans 'Answers' %} <span class="count">({{ object.children.public.answers | length }})</span></h2>
 
     {% for answer in object.children.public.answers|complete_content_list_for_user:user %}

@@ -50,9 +50,17 @@
       form.content-form.question-form ul#id_tags li label input:checked:before { color: rgba(0, 255, 255, 0.75); }
 
       /* List of tabs next to questions. */
-      .tags.list { display: block; font-size: 0; }
-      .tags.list > a.tag.item { display: inline-block; font-size: 13px; margin: 4px; padding: 6px; background-color: #BBB; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); color: white; position: relative; padding-left: 24px; border-top-left-radius: 16px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 16px; cursor: pointer; box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25); }
-      .tags.list > a.tag.item:before { content: '❋'; text-shadow: none; position: absolute; left: 8px; color: rgba(0, 255, 255, 0.75); }
+      .tags.list { display: block; font-size: 0; margin: 0; padding: 0; }
+      .tag.item { display: inline-block; font-size: 15px; line-height: 1.675em; margin: 4px 1.15em; padding: 0; background-color: transparent; color: #888; position: relative; cursor: pointer; overflow: visible; border: 1px solid rgba(0,0,0,0.32); border-width: 1px 0; transition: 0.3s ease-out; }
+      .tag.item:before { content: ''; position: absolute; left: -0.65em; top: 0.205em; width: 1.265em; height: 1.265em; background-color: transparent; transform: rotate(45deg); border: 1px solid #888; border-width: 0 0 1px 1px; transition: 0.3s ease-out; }
+      .tag.item:after { content: ''; position: absolute; right: -0.65em; top: 0.205em; width: 1.265em; height: 1.265em; background-color: transparent; transform: rotate(45deg); border: 1px solid #888; border-width: 1px 1px 0 0; transition: 0.3s ease-out; }
+      .tag.item:hover { color: #333; transition: 0.3s ease-out; }
+      .tag.item:hover:before { border-color: #333; transition: 0.3s ease-out; }
+      .tag.item:hover:after { border-color: #333; transition: 0.3s ease-out; }
+      .tag.item.large { font-size: 20px; }
+      .tag.item.medium { font-size: 16px; }
+      .tag.item.small { font-size: 13.3px; }
+      .tag.item.tiny { font-size: 12px; }
 
       form.content-form.answer-form {  }
 
@@ -66,27 +74,47 @@
       /* Any Content item. */
       .item { overflow: hidden; margin: 0; padding: 8px 0; }
       .item .updown { float: left; background-color: transparent; margin: 0; padding: 0; }
-      .item .updown .points { text-align: center; padding: 2px 0; color: gray; }
+      .item .updown .points { text-align: center; padding: 2px 0; color: #888; }
       .item .updown form {  }
       .item .updown form.up {  }
       .item .updown form.down {  }
-      .item .updown form input { font-size: 28px; line-height: 28px; border: none; outline: none; background: none; color: gray; cursor: pointer; }
-      .item .updown form.active input { color: #060; }
+      .item .updown form input { font-size: 28px; line-height: 28px; border: none; outline: none; background: none; color: #CCC; cursor: pointer; transition: 0.3s ease-out; }
+      .item .updown form input:hover { color: #AAA; transition: 0.3s ease-out; }
+      .item .updown form.active input { color: #333; }
+
       .item h1 { margin: 0; }
       .item h2 { margin: 0 0 8px 0; color: #333; }
       .item h2 a { color: inherit; }
       .item .content { margin: 0 0 0 50px; padding: 0; }
 
-      .question.content { margin: 16px; }
-      .question.content p { margin: 8px 0; }
+      .question.detail {  }
 
-      .comments.list { overflow: hidden; padding: 4px 0 4px 50px; }
-      .comment.item { overflow: hidden; background-color: #E9E9E9; margin: 4px; padding: 4px; }
-      .comment.item .updown { opacity: 0.5; transition: 0.3s ease-in; }
+      .question.item.header {  }
+      .question.item.header .meta { margin: 8px 0; padding: 0; }
+      .question.content { margin: 0 0 8px 42px; padding: 8px; border: 1px solid #E3E3E3; background-color: #F9F9F9; }
+      .question.content p { margin: 8px 0; }
+      .question.content p:first-child { margin-top: 0; }
+      .question.content p:last-child { margin-bottom: 0; }
+
+      .link-answer-create { display: inline-block; margin: 8px 8px 8px 42px; padding: 16px; background-color: blue; color: white; }
+
+      .answers.list { overflow: hidden; margin: 0; padding: 0; }
+      .answer.item { margin: 0; padding: 0; }
+      .answer.item .content { margin: 0; padding: 0; }
+      .answer.item .content .text { margin: 0; padding: 0; }
+      .answer.item .content .meta { margin: 0; padding: 0; }
+      .answer.item .content .links { margin: 0; padding: 0; }
+
+      .comments.list { opacity: 0.75; overflow: visible; margin: 8px 0 0 150px; padding: 4px 0; border: 1px solid #CCC; }
+      .comment.item { overflow: visible; position: relative; margin: 0; padding: 4px; border-bottom: 1px dotted #AAA; }
+      .comment.item .updown { position: absolute; left: -1.3rem; top: -0.15rem; opacity: 0; transition: 0.3s ease-in; background-color: #F3F3F3; border: 1px dotted #AAA; margin: 0; padding: 0 0.25rem; }
       .comment.item:hover .updown { opacity: 1; transition: 0.3s ease-out; }
-      .comment.item .updown .points { font-size: 0.85rem; padding: 0; margin: -2px 0; }
-      .comment.item .updown form input { font-size: 0.85rem; }
+      .comment.item .updown .points { display:none; }
+      .comment.item .updown form input { font-size: 0.85rem; line-height: 1rem; margin: 0; padding: 0; }
       .comment.item .content { font-size: 0.95rem; margin: 0; padding: 4px 0; }
+      .comment.item .content .text {  }
+      .comment.item .content .seperator {  }
+      .comment.item .content .meta {  }
 
     </style>
   </head>
