@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models, IntegrityError
-from django.db.models import Count, When, Case, Q, Sum
+from django.db.models import Count, When, Case, Q, Sum, F
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -33,28 +33,6 @@ content_type_choices = (('q', 'question'), ('a', 'answer'), ('c', 'comment'))
 
 class ContentQuerySet(models.QuerySet):
 
-    def for_user(self, user):
-        """
-        # ERROR: this returns one Content object for every related Vote object.
-        return self.annotate(
-            is_upvoted=Case(When(
-                Q(votes__user=user) & Q(votes__value=1), then=True),
-                default=False, output_field=models.BooleanField()),
-            is_downvoted=Case(When(
-                Q(votes__user=user) & Q(votes__value=-1), then=True),
-                default=False, output_field=models.BooleanField()))
-
-        # ERROR: This can trivially be converted into is_upvote and is_downvote
-        # by looking at num_votes (either 1 or -1) but that would still convert
-        # the QS into a list.
-        return self.annotate(num_votes=Sum(Case(
-                    When(Q(votes__user__pk=1) & Q(votes__value=1), then=1),
-                    When(Q(votes__user__pk=1) & Q(votes__value=-1), then=-1),
-                    default=0, output_field=models.IntegerField())))
-        """
-        raise NotImplementedError('Annotate is_upvoted and is_downvoted on the '
-                                  'Queryset is not implemented.')
-
     def order(self, name):
         if name == 'hot':
             return self.order_by('-timepoints')
@@ -67,8 +45,8 @@ class ContentQuerySet(models.QuerySet):
         return self.filter(content_type='q')
 
     def answers(self):
-        return self.filter(content_type='a').order_by('is_accepted',
-                                                      '-timepoints')
+        args = ['is_accepted', '-timepoints']
+        return self.filter(content_type='a').order_by(*args)
 
     def comments(self):
         return self.filter(content_type='c').order_by('id')
@@ -81,6 +59,9 @@ class ContentQuerySet(models.QuerySet):
 
     def deleted(self):
         return self.filter(is_deleted=True)
+
+    def by_user(self, user):
+        return self.filter(user=user)
 
     def viewable_only(self, user):
         """
@@ -176,8 +157,16 @@ class Content(models.Model):
             return 'Undefined content type {}: "{}"'.format(self.pk, self.title)
 
     def save(self, *args, **kwargs):
-        if self.is_question:
-            self.slug = slugify(self.title)
+        if not self.pk:
+            # For new items, set slug and count replies on parent.
+            if self.is_question:
+                self.slug = slugify(self.title)
+            if self.is_answer:
+                self.parent.count_answers = F('count_answers') + 1
+                self.parent.save()
+            if self.is_comment:
+                self.parent.count_comments = F('count_comments') + 1
+                self.parent.save()
 
         if self.is_answer and self.is_accepted:
             # Make sure there is no other accepted answer for this question.
