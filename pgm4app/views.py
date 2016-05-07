@@ -13,6 +13,7 @@ from django.views.generic.list import ListView
 
 from pgm4app.forms import AskForm
 from pgm4app.models import Content, Tag
+from pgm4app.utils import login_required_ajax
 
 
 class HomeView(TemplateView):
@@ -239,13 +240,15 @@ class CommentUpdateView(UpdateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required_ajax, name='dispatch')
 class VoteView(View):
     def post(self, *args, **kwargs):
         content = get_object_or_404(Content, pk=kwargs['pk'])
         content.toggle_vote(self.request.user, kwargs['vote'])
+
         if self.request.is_ajax():
             return JsonResponse({})
+
         _next = self.request.META.get('HTTP_REFERER', content.get_absolute_url())
         _hash = self.request.POST.get('hash', '')
         _hash = '#{}'.format(_hash) if _hash else ''

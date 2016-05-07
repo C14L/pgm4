@@ -197,9 +197,10 @@ class Content(models.Model):
         return reverse('question-detail', args=[question.pk, question.slug])
 
     def attach_user_vote(self, user):
-        vote = Vote.objects.filter(content=self, user=user).first()
-        self.is_upvoted = vote and vote.value == 1
-        self.is_downvoted = vote and vote.value == -1
+        if user.is_authenticated():
+            vote = Vote.objects.filter(content=self, user=user).first()
+            self.is_upvoted = vote and vote.value == 1
+            self.is_downvoted = vote and vote.value == -1
 
     def count_view(self):
         """Increase the view counter by one."""

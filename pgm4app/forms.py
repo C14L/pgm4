@@ -20,6 +20,7 @@ class AskForm(forms.ModelForm):
         self.fields['tags'].label = ''
         self.fields['tags'].queryset = Tag.objects.all()
 
+
     class Meta:
         fields = ['title', 'text', 'tags']
         model = Content

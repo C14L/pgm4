@@ -105,7 +105,7 @@
       .answer.item .content .meta { margin: 0; padding: 0; }
       .answer.item .content .links { margin: 0; padding: 0; }
 
-      .comments.list { opacity: 0.75; overflow: visible; margin: 8px 0 0 150px; padding: 4px 0; border: 1px solid #CCC; }
+      .comments.list { opacity: 0.75; overflow: visible; margin: 8px 0 0 150px; padding: 4px 0; }
       .comment.item { overflow: visible; position: relative; margin: 0; padding: 4px; border-bottom: 1px dotted #AAA; }
       .comment.item .updown { position: absolute; left: -1.3rem; top: -0.15rem; opacity: 0; transition: 0.3s ease-in; background-color: #F3F3F3; border: 1px dotted #AAA; margin: 0; padding: 0 0.25rem; }
       .comment.item:hover .updown { opacity: 1; transition: 0.3s ease-out; }
@@ -115,6 +115,17 @@
       .comment.item .content .text {  }
       .comment.item .content .seperator {  }
       .comment.item .content .meta {  }
+
+      /**
+       * The little popup bubble that tells anonymous users to login when
+       * they click links that are only for authenticated users.
+      **/
+      .auth-link-popup { width: 200px; overflow: hidden; margin: 0; padding: 16px; background-color: #FFF; border: 1px solid #888; box-shadow: 0 0 8px rgba(0, 0, 0, 0.56); border-radius: 16px; }
+      .auth-link-popup p {  }
+      .auth-link-popup p:first-child { font-weight: bold; }
+      .auth-link-popup p:last-child a { display: inline-block; margin: 0; padding: 8px 16px; transition: 0.3s ease-out; }
+      .auth-link-popup p:last-child a:hover { background-color: #E9E9E9; transition: 0.3s ease-out; }
+
 
     </style>
   </head>
@@ -151,11 +162,31 @@
         {% endfor %}
       </ul>
     {% endif %}
+    {% if user.is_anonymous %}
+      <div id="js_auth_link_popup" class="auth-link-popup" style="display:none;">
+        <p>{% trans 'Please login to do that.' %}</p>
+        <p>
+          <a href="{% url 'account_login' %}">{% trans 'login' %}</a>
+          <a href="{% url 'account_signup'  %}">{% trans 'signup' %}</a>
+        </p>
+      </div>
+    {% endif %}
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
   <script>
     $(function(){ 'use strict';
 
+      function show_auth_link_popup (target) {
+        var _target = $(target)[0];
+        var _top = _target.offsetTop + 'px';
+        var _left = _target.offsetLeft + 'px';
+        var _pos = { position: 'absolute', top: _top, left: _left };
+        $('#js_auth_link_popup').css(_pos).fadeIn('slow');
+      }
+
+      /**
+       * Intercept clicks on up/downvote and send then via AJAX.
+      **/
       $('.updown form').on('submit', function (event) {
         event.preventDefault();
 
@@ -164,34 +195,35 @@
         var $points = $this.siblings('.points');
         var url = $this.prop('action');
 
-        $.post(url, $.param($(this).serializeArray())).then(function(){
-          var wasActive = $this.hasClass('active');
-          var otherWasActive = $otherForm.hasClass('active');
-          var points = parseInt($points.text());
+        $.post(url, $.param($(this).serializeArray())).then(
+          function(data, textStatus, jqXHR){
+            var wasActive = $this.hasClass('active');
+            var otherWasActive = $otherForm.hasClass('active');
+            var points = parseInt($points.text());
 
-          $this.removeClass('active');
-          $otherForm.removeClass('active');
+            $this.removeClass('active');
+            $otherForm.removeClass('active');
 
-          if ($this.hasClass('up')) {
-            if (wasActive) {
-              points -= 1;
-            } else {
-              $this.addClass('active');
-              if (otherWasActive) { points += 2; } else { points += 1; }
+            if ($this.hasClass('up')) {
+              if (wasActive) {
+                points -= 1;
+              } else {
+                $this.addClass('active');
+                if (otherWasActive) { points += 2; } else { points += 1; }
+              }
+            } else if ($this.hasClass('down')) {
+              if (wasActive) {
+                points += 1;
+              } else {
+                $this.addClass('active');
+                if (otherWasActive) { points -= 2; } else { points -= 1; }
+              }
             }
-          } else if ($this.hasClass('down')) {
-            if (wasActive) {
-              points += 1;
-            } else {
-              $this.addClass('active');
-              if (otherWasActive) { points -= 2; } else { points -= 1; }
-            }
-          }
-          $points.text(points);
-        }).catch(function(){
-          console.log('POST error');
-          //pass
-        });
+            $points.text(points);
+          },
+          function (jqXHR, textStatus) {
+            if (jqXHR.status == 401) return show_auth_link_popup(event.target);
+          });
       });
 
     });
