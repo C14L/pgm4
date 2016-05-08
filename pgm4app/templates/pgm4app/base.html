@@ -42,8 +42,10 @@
       form.content-form.question-form [name] { display: block; margin: 0; padding: 8px; font-size: 1.5rem; background-color: #FFF; }
       form.content-form.question-form [name="title"] { width: 100%; height: 2.5em; }
       form.content-form.question-form [name="text"] { width: 100%; height: 8em; }
+
       form.content-form.question-form ul#id_tags { list-style: none; margin: 0; padding: 0; }
       form.content-form.question-form ul#id_tags li { display: inline-block; margin: 0; padding: 0; }
+
       form.content-form.question-form ul#id_tags li label { display: inline-block; font-size: 17px; margin: 2px; padding: 10px; background-color: #BBB; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); color: white; position: relative; padding-left: 28px; border-top-left-radius: 16px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 16px; cursor: pointer; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25); }
       form.content-form.question-form ul#id_tags li label input { display: inline; font-size: 18px; width: 0px; }
       form.content-form.question-form ul#id_tags li label input:before { content: '❋'; position: absolute; left: 8px; color: rgba(0, 0, 0, 0.5); }
@@ -176,6 +178,19 @@
   <script>
     $(function(){ 'use strict';
 
+      /**
+       * Don't allow newline chars in "textarea.no-newlines" elements.
+      **/
+
+      var _re = new RegExp('[\n\r]', 'g');
+      $('textarea.no-newlines').on('keyup', function (event) {
+        $(this).val($(this).val().replace(_re, ' '));
+      });
+
+      /**
+       * Intercept clicks on up/downvote and send then via AJAX.
+      **/
+
       function show_auth_link_popup (target) {
         var _target = $(target)[0];
         var _top = _target.offsetTop + 'px';
@@ -183,10 +198,6 @@
         var _pos = { position: 'absolute', top: _top, left: _left };
         $('#js_auth_link_popup').css(_pos).fadeIn('slow');
       }
-
-      /**
-       * Intercept clicks on up/downvote and send then via AJAX.
-      **/
       $('.updown form').on('submit', function (event) {
         event.preventDefault();
 

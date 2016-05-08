@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
@@ -11,7 +10,7 @@ from django.views.generic import TemplateView, CreateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from pgm4app.forms import AskForm
+from pgm4app.forms import AskForm, ContentTextForm
 from pgm4app.models import Content, Tag
 from pgm4app.utils import login_required_ajax
 
@@ -176,8 +175,7 @@ class AnswerUpdateView(UpdateView):
 
 
 class CommentCreateView(CreateView):
-    fields = ['text']
-    model = Content
+    form_class = ContentTextForm
     template_name = 'pgm4app/comment_create.html'
     _parent = None
     _question = None
@@ -212,8 +210,7 @@ class CommentCreateView(CreateView):
 
 
 class CommentUpdateView(UpdateView):
-    fields = ['text']
-    model = Content
+    form_class = ContentTextForm
     template_name = 'pgm4app/comment_create.html'
     _question = None
 
