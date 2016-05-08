@@ -130,6 +130,11 @@ class Content(models.Model):
     is_accepted = models.BooleanField(default=False, editable=True)  # by asker
 
     created = models.DateTimeField(null=False, editable=False, default=now)
+    # Show auth user questions that were edited since their last visit,
+    edited = models.DateTimeField(null=True, default=None, editable=False)
+    # Show auth user questions that have new answers since their last visit,
+    last_answered = models.DateTimeField(null=True, default=None, editable=False)
+
     up = models.PositiveIntegerField(null=False, editable=True, default=0)
     down = models.PositiveIntegerField(null=False, editable=True, default=0)
     points = models.PositiveIntegerField(null=False, editable=True, default=0)
@@ -157,7 +162,10 @@ class Content(models.Model):
             return 'Undefined content type {}: "{}"'.format(self.pk, self.title)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if self.pk:
+            # This may be an edit or just a counter update.
+            pass
+        else:
             # For new items, set slug and count replies on parent.
             if self.is_question:
                 self.slug = slugify(self.title)
