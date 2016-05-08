@@ -1,6 +1,8 @@
 {% extends "pgm4app/base.html" %}
 {% load i18n %}
 
+{% block body_classes %}tag-detail{% endblock %}
+
 {% block content %}
   <h1>{% blocktrans with tag=object.name %}Questions about {{ tag }}{% endblocktrans %}</h1>
   {% for question in object.content.public.questions %}

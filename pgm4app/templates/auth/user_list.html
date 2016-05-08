@@ -1,10 +1,12 @@
 {% extends "pgm4app/base.html" %}
 
+{% block body_classes %}user-list{% endblock %}
+
 {% block content %}
-    <h2>Users</h2>
-    <ul class="user-list">
-        {% for item in object_list %}
-            <li><a href="{% url 'user-detail' item.username %}">{{ item.username }}</a></li>
-        {% endfor %}
-    </ul>
+  <h2>Users</h2>
+  <ul class="user-list">
+    {% for item in object_list %}
+      <li><a href="{% url 'user-detail' item.username %}">{{ item.username }}</a></li>
+    {% endfor %}
+  </ul>
 {% endblock %}

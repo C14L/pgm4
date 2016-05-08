@@ -10,7 +10,7 @@ from django.views.generic import TemplateView, CreateView, UpdateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from pgm4app.forms import AskForm, ContentTextForm
+from pgm4app.forms import AskForm, AnswerForm, CommentForm
 from pgm4app.models import Content, Tag
 from pgm4app.utils import login_required_ajax
 
@@ -94,6 +94,7 @@ class QuestionUpdateView(UpdateView):
 
 class QuestionListView(ListView):
     template_name = 'pgm4app/question_list.html'
+    paginate_by = 5
 
     def _get_order(self):
         order = self.request.GET.get('order', 'hot')
@@ -121,10 +122,15 @@ class QuestionDetailView(DetailView):
         _object.count_view()
         return _object
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['answer_form'] = AnswerForm
+        context['answer_form_url'] = reverse('answer-create', args=[self.object.pk])
+        return context
+
 
 class AnswerCreateView(CreateView):
-    fields = ['text']
-    model = Content
+    form_class = AnswerForm
     template_name = 'pgm4app/answer_create.html'
 
     def _get_question_object(self):
@@ -153,7 +159,7 @@ class AnswerCreateView(CreateView):
 
 
 class AnswerUpdateView(UpdateView):
-    fields = ['text']
+    form_class = AnswerForm
     model = Content
     template_name = 'pgm4app/answer_create.html'
 
@@ -175,7 +181,7 @@ class AnswerUpdateView(UpdateView):
 
 
 class CommentCreateView(CreateView):
-    form_class = ContentTextForm
+    form_class = CommentForm
     template_name = 'pgm4app/comment_create.html'
     _parent = None
     _question = None
@@ -210,7 +216,8 @@ class CommentCreateView(CreateView):
 
 
 class CommentUpdateView(UpdateView):
-    form_class = ContentTextForm
+    form_class = CommentForm
+    model = Content
     template_name = 'pgm4app/comment_create.html'
     _question = None
 

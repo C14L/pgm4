@@ -1,11 +1,13 @@
 {% extends "pgm4app/base.html" %}
 {% load i18n %}
 
+{% block body_classes %}question-create{% endblock %}
+
 {% block content %}
   <h1>{% blocktrans with question=question.title %}Write an answer for: {{ question }}{% endblocktrans %}</h1>
 
-  <form class="answer-form content-form" action="" method="POST">{% csrf_token %}
-    {{ form.as_p }}
+  <form class="answer-form content-form" action="" method="POST">
+    {% csrf_token %}{{ form.as_p }}
     <p>
       <input type="submit" value="{% trans 'publish your answer' %}">&nbsp; &nbsp;
       <a href="{% url 'question-detail' question.pk question.slug %}">{% trans 'cancel' %}</a>

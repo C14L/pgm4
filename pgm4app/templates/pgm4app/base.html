@@ -16,7 +16,7 @@
       h2 { font-size: 24px; line-height: 28px; margin: 16px 0; padding: 0; }
       p { font-size: 16px; line-height: 24px; margin: 0; padding: 0; }
 
-      header { position: fixed; top: 0; right: 0; bottom: auto; left: 0; height: 48px; background-color: rgba(255, 255, 255, 0.82); color: #333; margin: 0; padding: 0; font-size: 0; box-shadow: 0 0 16px rgba(0, 0, 0, 0.32); }
+      header { position: fixed; top: 0; right: 0; bottom: auto; left: 0; height: 48px; background-color: rgba(255, 255, 255, 0.82); color: #333; margin: 0; padding: 0; font-size: 0; box-shadow: 0 0 16px rgba(0, 0, 0, 0.32); z-index: 1000; }
       header a, header span { display: inline-block; color: inherit; vertical-align: middle; }
       header a.site-name { font: normal 24px/48px sans-serif; margin: 0; padding: 0 16px; }
       header .header-nav { font-size: 0; vertical-align: middle; float: right; }
@@ -51,7 +51,13 @@
       form.content-form.question-form ul#id_tags li label input:before { content: '❋'; position: absolute; left: 8px; color: rgba(0, 0, 0, 0.5); }
       form.content-form.question-form ul#id_tags li label input:checked:before { color: rgba(0, 255, 255, 0.75); }
 
-      /* List of tabs next to questions. */
+      form .content-text { width: 100%; }
+      form.answer-form .content-text { height: 10em; }
+
+      /**
+       * List of tabs next to questions.
+      **/
+
       .tags.list { display: block; font-size: 0; margin: 0; padding: 0; }
       .tag.item { display: inline-block; font-size: 15px; line-height: 1.675em; margin: 4px 1.15em; padding: 0; background-color: transparent; color: #888; position: relative; cursor: pointer; overflow: visible; border: 1px solid rgba(0,0,0,0.32); border-width: 1px 0; transition: 0.3s ease-out; }
       .tag.item:before { content: ''; position: absolute; left: -0.65em; top: 0.205em; width: 1.265em; height: 1.265em; background-color: transparent; transform: rotate(45deg); border: 1px solid #888; border-width: 0 0 1px 1px; transition: 0.3s ease-out; }
@@ -98,7 +104,7 @@
       .question.content p:first-child { margin-top: 0; }
       .question.content p:last-child { margin-bottom: 0; }
 
-      .link-answer-create { display: inline-block; margin: 8px 8px 8px 42px; padding: 16px; background-color: blue; color: white; }
+      .question.detail .links { display: inline-block; margin: 16px 0 16px 50px; padding: 0; }
 
       .answers.list { overflow: hidden; margin: 0; padding: 0; }
       .answer.item { margin: 0; padding: 0; }
@@ -128,10 +134,19 @@
       .auth-link-popup p:last-child a { display: inline-block; margin: 0; padding: 8px 16px; transition: 0.3s ease-out; }
       .auth-link-popup p:last-child a:hover { background-color: #E9E9E9; transition: 0.3s ease-out; }
 
+      .pagination { border-top: 1px solid #AAA; margin-top: 8px; padding-top: 8px; }
 
+      footer { margin: 32px 16px 0 16px; padding: 16px;  border-top: 1px solid #AAA; color: #AAA; }
+      footer a { color: inherit; }
+
+      /**
+       *
+      **/
+
+      .question-detail h2 { border-top: 1px solid #AAA; margin-top: 16px; padding-top: 16px; }
     </style>
   </head>
-  <body>
+  <body class="{% block body_classes %}{% endblock %}">
     <header>
       <a class="site-name" href="{% url 'home' %}">pre.gunta.me</a>
       <span class="header-nav">
@@ -173,6 +188,9 @@
         </p>
       </div>
     {% endif %}
+    <footer>
+      &copy; 2016 &mdash; <a href="https://C14L.com/impressum.html">privacy policy - terms of service - imprint - cookie policy</a>
+    </footer>
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
   <script>

@@ -28,7 +28,20 @@ class AskForm(forms.ModelForm):
         model = Content
 
 
-class ContentTextForm(forms.ModelForm):
+class AnswerForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['text'].widget = forms.Textarea(
+            attrs={'placeholder': _('Write your answer here'),
+                   'class': 'content-text'})
+
+    class Meta:
+        model = Content
+        fields = ['text']
+
+
+class CommentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

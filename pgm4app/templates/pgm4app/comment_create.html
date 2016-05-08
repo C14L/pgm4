@@ -1,6 +1,8 @@
 {% extends "pgm4app/base.html" %}
 {% load i18n %}
 
+{% block body_classes %}comment-create{% endblock %}
+
 {% block content %}
   <form class="answer-form content-form" action="" method="POST">{% csrf_token %}
     {{ form.as_p }}

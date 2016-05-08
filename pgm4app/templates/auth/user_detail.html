@@ -1,6 +1,8 @@
 {% extends "pgm4app/base.html" %}
 {% load pgm4tags i18n markdown_deux_tags bleach_tags %}
 
+{% block body_classes %}user-detail{% endblock %}
+
 {% block content %}
   <h1>Hey, {{ object.username }}!</h1>
   {% if questions %}

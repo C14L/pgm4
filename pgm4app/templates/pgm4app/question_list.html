@@ -1,13 +1,29 @@
 {% extends "pgm4app/base.html" %}
 {% load pgm4tags i18n markdown_deux_tags bleach_tags %}
 
+{% block body_classes %}question-list{% endblock %}
+
 {% block content %}
-  <h1>Questions</h1>
+  {% if page_obj.number > 1 %}
+    <h1>{% blocktrans with number=page_obj.number %}Questions, page {{ number }}{% endblocktrans %}</h1>
+  {% else %}
+    <h1>{% trans 'Questions' %}</h1>
+  {% endif %}
   {% if object_list %}
     {% for question in object_list|complete_content_list_for_user:user %}
       {% include 'pgm4app/question_header_partial.html' with detail=0 %}
     {% endfor %}
   {% else %}
     <p>{% trans 'No questions found.' %}</p>
+  {% endif %}
+
+  {% if is_paginated %}
+    <div class="pagination">
+      <span class="page-links">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">previous</a>{% endif %}
+        <span class="page-current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">next</a>{% endif %}
+      </span>
+    </div>
   {% endif %}
 {% endblock %}
