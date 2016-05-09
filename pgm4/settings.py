@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+# TODO: Use https://github.com/justquick/django-activity-stream
+
+# TODO: Use some Django "follower" app.
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -51,38 +55,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     # 'allauth.socialaccount.providers.instagram',
     # 'allauth.socialaccount.providers.twitter',
-
-    # ... include the providers you want to enable:
-    # 'allauth.socialaccount.providers.amazon',
-    # 'allauth.socialaccount.providers.angellist',
-    # 'allauth.socialaccount.providers.bitbucket',
-    # 'allauth.socialaccount.providers.bitly',
-    # 'allauth.socialaccount.providers.coinbase',
-    # 'allauth.socialaccount.providers.dropbox',
-    # 'allauth.socialaccount.providers.dropbox_oauth2',
-    # 'allauth.socialaccount.providers.edmodo',
-    # 'allauth.socialaccount.providers.evernote',
-    # 'allauth.socialaccount.providers.flickr',
-    # 'allauth.socialaccount.providers.feedly',
-    # 'allauth.socialaccount.providers.fxa',
-    # 'allauth.socialaccount.providers.github',
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.hubic',
-    # 'allauth.socialaccount.providers.linkedin',
-    # 'allauth.socialaccount.providers.linkedin_oauth2',
-    # 'allauth.socialaccount.providers.odnoklassniki',
-    # 'allauth.socialaccount.providers.openid',
-    # 'allauth.socialaccount.providers.persona',
-    # 'allauth.socialaccount.providers.soundcloud',
-    # 'allauth.socialaccount.providers.spotify',
-    # 'allauth.socialaccount.providers.stackexchange',
-    # 'allauth.socialaccount.providers.stripe',
     # 'allauth.socialaccount.providers.tumblr',
     # 'allauth.socialaccount.providers.twitch',
-    # 'allauth.socialaccount.providers.vimeo',
-    # 'allauth.socialaccount.providers.vk',
-    # 'allauth.socialaccount.providers.weibo',
-    # 'allauth.socialaccount.providers.xing',
 
     'markdown_deux',
     'django_bleach',
@@ -140,18 +114,14 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation'
+             '.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation'
+             '.MinimumLengthValidator', },
+    {'NAME': 'django.contrib.auth.password_validation'
+             '.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation'
+             '.NumericPasswordValidator', },
 ]
 
 
